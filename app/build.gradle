@@ -3,17 +3,17 @@ plugins {
 }
 
 android {
-	compileSdk 34
+	compileSdk 35
 	
 	useLibrary 'org.apache.http.legacy'
 	
 	defaultConfig {
-		applicationId "com.flappybird.recreation"
+		applicationId "com.walmirramos.flappynengue"
 		namespace "com.flappybird.recreation"
 		minSdkVersion 21
 		targetSdkVersion 35
-		versionCode 15
-		versionName "1.5 beta2"
+		versionCode 27
+		versionName "1.10.1-corre-nengue"
 	}
 	
 	buildTypes {
@@ -22,8 +22,12 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 		}
 	}
-	buildFeatures {
-		 viewBinding true
+	compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    buildFeatures {
+		 viewBinding false
 	}
 }
 

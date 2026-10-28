@@ -25,7 +25,7 @@
 				android:id="@+id/button_back"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Back"
+				android:text="Voltar"
 				android:textSize="18sp"
 				android:textColor="#FFFFFF"
 				style="@style/Widget.Material3.Button.TextButton.Icon"
@@ -35,11 +35,11 @@
 				android:layout_alignParentStart="true"
 				android:layout_centerVertical="true" />
 			<TextView
-				android:id="@+id/tv_settings_title"
+				android:id="@+id/tv_settings_title" android:layout_toEndOf="@id/button_back" android:gravity="end"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="SETTINGS"
-				android:textSize="28sp"
+				android:text="CONFIGURAÇÕES"
+				android:textSize="20sp"
 				android:textColor="#FFC107"
 				android:letterSpacing="0.05"
 				android:fontFamily="@font/flappy_bold"
@@ -47,7 +47,7 @@
 				android:shadowDx="4"
 				android:shadowDy="4"
 				android:shadowRadius="2"
-				android:layout_centerInParent="true" />
+				android:layout_alignParentEnd="true" />
 		</RelativeLayout>
 		<androidx.core.widget.NestedScrollView
 			android:id="@+id/settings_scrollview"
@@ -66,7 +66,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="8dp"
-					android:text="Live Preview"
+					android:text="Prévia em tempo real"
 					android:textSize="14sp"
 					android:textColor="#AAAAAA"
 					android:fontFamily="@font/flappy_bold"
@@ -91,7 +91,7 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="12dp"
 						android:background="#FF0000"
-						android:text="LIVE"
+						android:text="AO VIVO"
 						android:textSize="10sp"
 						android:textColor="#FFFFFF"
 						android:layout_gravity="top|end"
@@ -118,7 +118,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="Profiles &amp; Management"
+							android:text="Perfis e ajustes"
 							android:textSize="20sp"
 							android:textColor="#4FC3F7"
 							android:fontFamily="@font/flappy_bold" />
@@ -133,7 +133,7 @@
 								android:id="@+id/textview631"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Slot 1"
+								android:text="Perfil 1"
 								android:textSize="18sp"
 								android:textColor="#FFFFFF"
 								android:layout_weight="1"
@@ -142,7 +142,7 @@
 								android:id="@+id/button_save_profile_1"
 								android:layout_width="wrap_content"
 								android:layout_height="40dp"
-								android:text="Save"
+								android:text="Salvar"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								style="@style/Widget.Material3.Button"
@@ -153,7 +153,7 @@
 								android:id="@+id/button_load_profile_1"
 								android:layout_width="wrap_content"
 								android:layout_height="40dp"
-								android:text="Load"
+								android:text="Carregar"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								style="@style/Widget.Material3.Button"
@@ -182,7 +182,7 @@
 								android:id="@+id/textview632"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Slot 2"
+								android:text="Perfil 2"
 								android:textSize="18sp"
 								android:textColor="#FFFFFF"
 								android:layout_weight="1"
@@ -191,7 +191,7 @@
 								android:id="@+id/button_save_profile_2"
 								android:layout_width="wrap_content"
 								android:layout_height="40dp"
-								android:text="Save"
+								android:text="Salvar"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								style="@style/Widget.Material3.Button"
@@ -202,7 +202,7 @@
 								android:id="@+id/button_load_profile_2"
 								android:layout_width="wrap_content"
 								android:layout_height="40dp"
-								android:text="Load"
+								android:text="Carregar"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								style="@style/Widget.Material3.Button"
@@ -231,7 +231,7 @@
 								android:id="@+id/textview633"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Slot 3"
+								android:text="Perfil 3"
 								android:textSize="18sp"
 								android:textColor="#FFFFFF"
 								android:layout_weight="1"
@@ -240,7 +240,7 @@
 								android:id="@+id/button_save_profile_3"
 								android:layout_width="wrap_content"
 								android:layout_height="40dp"
-								android:text="Save"
+								android:text="Salvar"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								style="@style/Widget.Material3.Button"
@@ -251,7 +251,7 @@
 								android:id="@+id/button_load_profile_3"
 								android:layout_width="wrap_content"
 								android:layout_height="40dp"
-								android:text="Load"
+								android:text="Carregar"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								style="@style/Widget.Material3.Button"
@@ -284,7 +284,7 @@
 								android:id="@+id/button_randomize_all"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Randomize"
+								android:text="Sortear ajustes"
 								android:textSize="12sp"
 								android:textColor="#000000"
 								android:layout_weight="1"
@@ -296,7 +296,7 @@
 								android:id="@+id/button_reset_all"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Default"
+								android:text="Restaurar padrão"
 								android:textSize="12sp"
 								android:textColor="#FFFFFF"
 								android:layout_weight="1"
@@ -308,7 +308,7 @@
 							android:id="@+id/button_reset_profiles"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
-							android:text="Clear All Data"
+							android:text="Apagar todos os perfis"
 							android:textSize="12sp"
 							android:textColor="#FF6666"
 							style="@style/Widget.Material3.Button.TextButton"
@@ -334,7 +334,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="World &amp; Atmosphere"
+							android:text="Cidade e ambiente"
 							android:textSize="20sp"
 							android:textColor="#81C784"
 							android:fontFamily="@font/flappy_bold" />
@@ -344,10 +344,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview635"
+								android:layout_toStartOf="@id/switch_day_night_cycle" android:layout_marginEnd="12dp" android:id="@+id/textview635"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Dynamic Cycle"
+								android:text="Alternar dia e noite"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -365,7 +365,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="8dp"
-							android:text="Background Theme"
+							android:text="Tema do cenário"
 							android:textSize="14sp"
 							android:textColor="#AAAAAA"
 							android:fontFamily="@font/flappy_font" />
@@ -420,7 +420,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Day"
+										android:text="Dia"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -429,7 +429,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Night"
+										android:text="Noite"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -438,7 +438,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Random"
+										android:text="Aleatório"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -450,7 +450,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="8dp"
-							android:text="Weather Effects"
+							android:text="Clima"
 							android:textSize="14sp"
 							android:textColor="#AAAAAA"
 							android:fontFamily="@font/flappy_font" />
@@ -512,7 +512,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Clear"
+										android:text="Limpo"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -521,7 +521,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Rain"
+										android:text="Chuva"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -530,7 +530,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Storm"
+										android:text="Tempestade"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -539,7 +539,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Snow"
+										android:text="Neve"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -557,7 +557,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="8dp"
-							android:text="Lightning Events (Storm Only)"
+							android:text="Raios durante a tempestade"
 							android:textSize="14sp"
 							android:textColor="#FFEB3B"
 							android:fontFamily="@font/flappy_font" />
@@ -571,7 +571,7 @@
 								android:id="@+id/textview7"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Strike Scores (e.g. 10,20):"
+								android:text="Raios aos Nencoins (ex.: 10,20):"
 								android:textSize="12sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -597,7 +597,7 @@
 								android:id="@+id/textview8"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Mega Strike Score:"
+								android:text="Nencoins para o super-raio:"
 								android:textSize="12sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -635,7 +635,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="Visuals &amp; Effects"
+							android:text="Visual e efeitos"
 							android:textSize="20sp"
 							android:textColor="#FF8A65"
 							android:fontFamily="@font/flappy_bold" />
@@ -644,7 +644,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="8dp"
-							android:text="Bird Color"
+							android:text="Cor do personagem"
 							android:textSize="14sp"
 							android:textColor="#AAAAAA"
 							android:fontFamily="@font/flappy_font" />
@@ -707,7 +707,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Yellow"
+										android:text="Original"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -716,7 +716,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Blue"
+										android:text="Azul"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -725,7 +725,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Red"
+										android:text="Rosa"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -734,7 +734,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Random"
+										android:text="Aleatório"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -747,10 +747,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview640"
+								android:layout_toStartOf="@id/switch_rainbow_bird" android:layout_marginEnd="12dp" android:id="@+id/textview640"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Rainbow Bird"
+								android:text="Personagem arco-íris"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -769,10 +769,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview641"
+								android:layout_toStartOf="@id/switch_bird_trail" android:layout_marginEnd="12dp" android:id="@+id/textview641"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Bird Trail"
+								android:text="Rastro do personagem"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -791,10 +791,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview642"
+								android:layout_toStartOf="@id/switch_screen_shake" android:layout_marginEnd="12dp" android:id="@+id/textview642"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Screen Shake"
+								android:text="Tremor da tela"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -819,7 +819,7 @@
 								android:id="@+id/textview643"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Shake Strength:"
+								android:text="Intensidade do tremor:"
 								android:textSize="16sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -843,10 +843,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview644"
+								android:layout_toStartOf="@id/switch_motion_blur" android:layout_marginEnd="12dp" android:id="@+id/textview644"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Motion Blur"
+								android:text="Desfoque de movimento"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -871,7 +871,7 @@
 								android:id="@+id/textview645"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Blur Strength:"
+								android:text="Intensidade do desfoque:"
 								android:textSize="16sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -899,7 +899,7 @@
 								android:id="@+id/textview646"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Game Over Opacity %:"
+								android:text="Opacidade do fim de jogo (%):"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:layout_weight="1"
@@ -938,7 +938,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="Pipe Configuration"
+							android:text="Configurações das paredes"
 							android:textSize="20sp"
 							android:textColor="#7E57C2"
 							android:fontFamily="@font/flappy_bold" />
@@ -947,7 +947,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="8dp"
-							android:text="Pipe Style"
+							android:text="Cor das paredes"
 							android:textSize="14sp"
 							android:textColor="#AAAAAA"
 							android:fontFamily="@font/flappy_font" />
@@ -1050,7 +1050,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Classic"
+										android:text="Original"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1059,7 +1059,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Red"
+										android:text="Vermelho"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1068,7 +1068,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Blue"
+										android:text="Azul"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1077,7 +1077,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Yellow"
+										android:text="Amarelo"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1086,7 +1086,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="White"
+										android:text="Branco"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1095,7 +1095,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Pink"
+										android:text="Rosa"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1104,7 +1104,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Black"
+										android:text="Preto"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1113,7 +1113,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Purple"
+										android:text="Roxo"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1122,7 +1122,7 @@
 										android:layout_width="90dp"
 										android:layout_height="wrap_content"
 										android:gravity="center_horizontal|center_vertical"
-										android:text="Orange"
+										android:text="Laranja"
 										android:textSize="12sp"
 										android:textColor="#AAAAAA"
 										android:fontFamily="@font/flappy_font" />
@@ -1135,10 +1135,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview649"
+								android:layout_toStartOf="@id/switch_random_pipe_colors" android:layout_marginEnd="12dp" android:id="@+id/textview649"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Randomize Pipe Colors"
+								android:text="Variar cores das paredes"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1163,10 +1163,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview650"
+								android:layout_toStartOf="@id/switch_moving_pipes" android:layout_marginEnd="12dp" android:id="@+id/textview650"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Enable Moving Pipes"
+								android:text="Paredes em movimento"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1196,7 +1196,7 @@
 									android:id="@+id/textview651"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Tier 1 Score"
+									android:text="Nencoins do nível 1"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1223,7 +1223,7 @@
 									android:id="@+id/textview652"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Tier 2 Score"
+									android:text="Nencoins do nível 2"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1252,10 +1252,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview653"
+								android:layout_toStartOf="@id/switch_golden_pipe" android:layout_marginEnd="12dp" android:id="@+id/textview653"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Golden Pipes (Bonus)"
+								android:text="Paredes douradas (bônus)"
 								android:textSize="18sp"
 								android:textColor="#FFD700"
 								android:fontFamily="@font/flappy_font"
@@ -1285,7 +1285,7 @@
 									android:id="@+id/textview654"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Chance %"
+									android:text="Chance (%)"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1312,7 +1312,7 @@
 									android:id="@+id/textview655"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Bonus Points"
+									android:text="Bônus de Nencoins"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1350,7 +1350,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="Game Physics"
+							android:text="Física do jogo"
 							android:textSize="20sp"
 							android:textColor="#EF5350"
 							android:fontFamily="@font/flappy_bold" />
@@ -1371,7 +1371,7 @@
 									android:id="@+id/textview657"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Game Speed"
+									android:text="Velocidade do jogo"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1399,7 +1399,7 @@
 									android:id="@+id/textview658"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Gravity"
+									android:text="Gravidade"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1426,7 +1426,7 @@
 									android:id="@+id/textview659"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Jump Strength"
+									android:text="Força do salto"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1454,7 +1454,7 @@
 									android:id="@+id/textview660"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Hang Delay"
+									android:text="Tempo de flutuação"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1481,7 +1481,7 @@
 									android:id="@+id/textview661"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Bird Size"
+									android:text="Tamanho do personagem"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1509,7 +1509,7 @@
 									android:id="@+id/textview662"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Hitbox Scale"
+									android:text="Área de colisão"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1536,7 +1536,7 @@
 									android:id="@+id/textview663"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Pipe Gap"
+									android:text="Abertura entre paredes"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1564,7 +1564,7 @@
 									android:id="@+id/textview664"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Pipe Spacing"
+									android:text="Distância entre paredes"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1591,7 +1591,7 @@
 									android:id="@+id/textview665"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Pipe Width"
+									android:text="Largura das paredes"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1619,7 +1619,7 @@
 									android:id="@+id/textview666"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Height Variation"
+									android:text="Variação de altura"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1646,7 +1646,7 @@
 									android:id="@+id/textview667"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Speed Flux"
+									android:text="Variação de velocidade"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1674,7 +1674,7 @@
 									android:id="@+id/textview668"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Score Multiplier"
+									android:text="Multiplicador de Nencoins"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1701,7 +1701,7 @@
 									android:id="@+id/textview669"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Sky Speed"
+									android:text="Velocidade do cenário"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1729,7 +1729,7 @@
 									android:id="@+id/textview670"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Ground Speed"
+									android:text="Velocidade do chão"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1767,7 +1767,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="Modes &amp; Cheats"
+							android:text="Modos e vantagens"
 							android:textSize="20sp"
 							android:textColor="#FFD180"
 							android:fontFamily="@font/flappy_bold" />
@@ -1784,10 +1784,10 @@
 								android:orientation="vertical"
 								android:layout_centerVertical="true">
 								<TextView
-									android:id="@+id/textview9"
+									android:layout_toStartOf="@id/switch_original_mode" android:layout_marginEnd="12dp" android:id="@+id/textview9"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="FB v1.3 Mode"
+									android:text="Modo clássico v1.3"
 									android:textSize="18sp"
 									android:textColor="#4DB6AC"
 									android:fontFamily="@font/flappy_font" />
@@ -1795,7 +1795,7 @@
 									android:id="@+id/textview10"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Authentic physics. Overrides settings. Not working, unreleased, highly experimental."
+									android:text="Física clássica. Substitui os ajustes personalizados. Modo experimental, ainda em desenvolvimento."
 									android:textSize="10sp"
 									android:textColor="#AAAAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1817,15 +1817,15 @@
 							android:background="#444444"
 							android:visibility="gone" />
 						<RelativeLayout
-							android:id="@+id/relativelayout218"
+							android:id="@+id/relativelayout218" android:visibility="gone"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview672"
+								android:layout_toStartOf="@id/switch_no_clip" android:layout_marginEnd="12dp" android:id="@+id/textview672"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="God Mode (No Clip)"
+								android:text="Modo invencível (sem colisão)"
 								android:textSize="18sp"
 								android:textColor="#EF5350"
 								android:fontFamily="@font/flappy_font"
@@ -1844,10 +1844,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview673"
+								android:layout_toStartOf="@id/switch_ghost_mode" android:layout_marginEnd="12dp" android:id="@+id/textview673"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Ghost Mode (Transparent)"
+								android:text="Modo fantasma (transparente)"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1866,10 +1866,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview674"
+								android:layout_toStartOf="@id/switch_jetpack_mode" android:layout_marginEnd="12dp" android:id="@+id/textview674"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Jetpack Mode"
+								android:text="Modo mochila a jato"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1888,10 +1888,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview675"
+								android:layout_toStartOf="@id/switch_flap_timeout" android:layout_marginEnd="12dp" android:id="@+id/textview675"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Infinite Flap"
+								android:text="Saltos infinitos"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1910,10 +1910,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview676"
+								android:layout_toStartOf="@id/switch_drunk_mode" android:layout_marginEnd="12dp" android:id="@+id/textview676"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Drunk Mode"
+								android:text="Modo cambaleante"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1938,7 +1938,7 @@
 								android:id="@+id/textview677"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Drunk Strength:"
+								android:text="Intensidade do balanço:"
 								android:textSize="16sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -1962,10 +1962,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview678"
+								android:layout_toStartOf="@id/switch_upside_down" android:layout_marginEnd="12dp" android:id="@+id/textview678"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Upside Down World"
+								android:text="Mundo de cabeça para baixo"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -1983,10 +1983,10 @@
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content">
 							<TextView
-								android:id="@+id/textview679"
+								android:layout_toStartOf="@id/switch_reverse_pipes" android:layout_marginEnd="12dp" android:id="@+id/textview679"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Reverse Pipes (Right to Left)"
+								android:text="Inverter sentido das paredes"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -2020,7 +2020,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="16dp"
-							android:text="System"
+							android:text="Sistema e áudio"
 							android:textSize="20sp"
 							android:textColor="#BDBDBD"
 							android:fontFamily="@font/flappy_bold" />
@@ -2030,10 +2030,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview681"
+								android:layout_toStartOf="@id/switch_sound" android:layout_marginEnd="12dp" android:id="@+id/textview681"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Sound Effects"
+								android:text="Efeitos sonoros"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -2052,10 +2052,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview682"
+								android:layout_toStartOf="@id/switch_haptic_feedback" android:layout_marginEnd="12dp" android:id="@+id/textview682"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Vibration"
+								android:text="Vibração"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -2074,10 +2074,10 @@
 							android:layout_height="wrap_content"
 							android:layout_marginBottom="12dp">
 							<TextView
-								android:id="@+id/textview683"
+								android:layout_toStartOf="@id/switch_wing_animation" android:layout_marginEnd="12dp" android:id="@+id/textview683"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Bird Wing Animations"
+								android:text="Animação do personagem"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"
@@ -2095,10 +2095,10 @@
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content">
 							<TextView
-								android:id="@+id/textview684"
+								android:layout_toStartOf="@id/switch_hide_settings_icon" android:layout_marginEnd="12dp" android:id="@+id/textview684"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:text="Hide Gear Icon In-Game"
+								android:text="Ocultar ajustes na partida"
 								android:textSize="18sp"
 								android:textColor="#EEEEEE"
 								android:fontFamily="@font/flappy_font"

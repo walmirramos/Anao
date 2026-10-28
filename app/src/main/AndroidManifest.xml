@@ -41,7 +41,7 @@ android:icon="@mipmap/launcher"
 			android:theme="@style/AppTheme.DebugActivity" />
 		<provider
 			android:name="androidx.startup.InitializationProvider"
-			android:authorities="com.flappybird.recreation.androidx-startup"
+			android:authorities="${applicationId}.androidx-startup"
 			android:exported="false">
 			<meta-data
 				android:name="androidx.lifecycle.ProcessLifecycleInitializer"
@@ -54,4 +54,4 @@ android:icon="@mipmap/launcher"
 			android:name="org.apache.http.legacy"
 			android:required="false" />
 	</application>
-</manifest>
+</manifest>

@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Choreographer;
+import android.view.HapticFeedbackConstants;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -52,6 +54,8 @@ import java.util.List;
 import java.util.Random;
 
 public class SettingsActivity extends AppCompatActivity {
+    private AudioControls audioControls;
+    private final SecretGestureTouch secretGestureTouch=new SecretGestureTouch();
 
     public static final String PREFS_NAME = "FlappyBirdPrefs";
     public static final String PREF_BIRD_COLOR = "pref_bird_color";
@@ -177,6 +181,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PixelFont.init(this);
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         if (!prefs.getBoolean(PREF_SETTINGS_DISCLAIMER_SHOWN, false)) {
@@ -199,11 +204,28 @@ public class SettingsActivity extends AppCompatActivity {
         setupListeners();
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        View decor=getWindow().getDecorView();
+        if(secretGestureTouch.onTouchEvent(event,decor.getWidth(),decor.getHeight())) {
+            // The scroll view/control saw the stroke, but must never receive its final click.
+            MotionEvent cancel=MotionEvent.obtain(event);
+            cancel.setAction(MotionEvent.ACTION_CANCEL);
+            try { super.dispatchTouchEvent(cancel); } finally { cancel.recycle(); }
+            boolean enabled=SecretInvincibility.toggle();
+            if(prefs!=null && prefs.getBoolean(PREF_HAPTIC_FEEDBACK_ENABLED,DEFAULT_HAPTIC_FEEDBACK_ENABLED))
+                decor.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            Toast.makeText(this,enabled ? "Invencibilidade ativada" : "Invencibilidade desativada",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
     private void showDisclaimerDialog() {
         new MaterialAlertDialogBuilder(this)
-                .setTitle("Settings Disclaimer")
-                .setMessage("Adjusting settings can potentially make the game unstable. Proceed with caution.")
-                .setPositiveButton("I Understand", (dialog, which) -> {
+                .setTitle("Sobre os ajustes")
+                .setMessage("Alguns ajustes extremos podem afetar a partida. Você pode restaurar o padrão a qualquer momento.")
+                .setPositiveButton("Entendi", (dialog, which) -> {
                     prefs.edit().putBoolean(PREF_SETTINGS_DISCLAIMER_SHOWN, true).apply();
                     dialog.dismiss();
                 })
@@ -233,6 +255,7 @@ public class SettingsActivity extends AppCompatActivity {
         weatherGroup = findViewById(R.id.rg_weather);
 
         soundSwitch = findViewById(R.id.switch_sound);
+        audioControls = new AudioControls(this, findViewById(R.id.card_general), this::saveCurrentSettings);
         wingAnimationSwitch = findViewById(R.id.switch_wing_animation);
         hideSettingsIconSwitch = findViewById(R.id.switch_hide_settings_icon);
         hapticFeedbackSwitch = findViewById(R.id.switch_haptic_feedback);
@@ -253,6 +276,7 @@ public class SettingsActivity extends AppCompatActivity {
         motionBlurSwitch = findViewById(R.id.switch_motion_blur);
 
         noClipSwitch = findViewById(R.id.switch_no_clip);
+        noClipSwitch.setEnabled(false);
         upsideDownSwitch = findViewById(R.id.switch_upside_down);
         reversePipesSwitch = findViewById(R.id.switch_reverse_pipes);
         infiniteFlapSwitch = findViewById(R.id.switch_flap_timeout);
@@ -290,7 +314,6 @@ public class SettingsActivity extends AppCompatActivity {
         controls.add(pipeColorGroup);
         controls.add(weatherGroup);
         controls.add(soundSwitch);
-        controls.add(noClipSwitch);
         controls.add(wingAnimationSwitch);
         controls.add(movingPipesSwitch);
         controls.add(hideSettingsIconSwitch);
@@ -337,6 +360,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void loadSettingsFromSource(SharedPreferences source) {
+        audioControls.load(source);
         int birdColor = source.getInt(PREF_BIRD_COLOR, DEFAULT_BIRD_COLOR);
         switch (birdColor) {
             case 0: birdColorGroup.check(R.id.rb_bird_yellow); break;
@@ -357,7 +381,7 @@ public class SettingsActivity extends AppCompatActivity {
         else weatherGroup.check(R.id.rb_weather_off);
 
         soundSwitch.setChecked(source.getBoolean(PREF_SOUND_ENABLED, DEFAULT_SOUND_ENABLED));
-        noClipSwitch.setChecked(source.getBoolean(PREF_NO_CLIP_ENABLED, DEFAULT_NO_CLIP_ENABLED));
+        noClipSwitch.setChecked(false);
         wingAnimationSwitch.setChecked(source.getBoolean(PREF_WING_ANIMATION_ENABLED, DEFAULT_WING_ANIMATION_ENABLED));
         movingPipesSwitch.setChecked(source.getBoolean(PREF_MOVING_PIPES_ENABLED, DEFAULT_MOVING_PIPES_ENABLED));
         hideSettingsIconSwitch.setChecked(source.getBoolean(PREF_HIDE_SETTINGS_ICON, DEFAULT_HIDE_SETTINGS_ICON));
@@ -419,6 +443,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void saveSettingsToEditor(SharedPreferences.Editor editor) {
+        audioControls.save(editor);
         editor.putInt(PREF_BIRD_COLOR, getBirdColorFromRadio());
         editor.putInt(PREF_BACKGROUND, getBackgroundFromRadio());
         editor.putInt(PREF_PIPE_COLOR, getPipeColorFromRadio());
@@ -437,7 +462,7 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putBoolean(PREF_MOVING_PIPES_ENABLED, movingPipesSwitch.isChecked());
         editor.putBoolean(PREF_RANDOM_PIPE_COLORS_ENABLED, randomPipeColorsSwitch.isChecked());
         editor.putBoolean(PREF_GOLDEN_PIPE_ENABLED, goldenPipeSwitch.isChecked());
-        editor.putBoolean(PREF_NO_CLIP_ENABLED, noClipSwitch.isChecked());
+        editor.remove(PREF_NO_CLIP_ENABLED);
         editor.putBoolean(PREF_UPSIDE_DOWN_ENABLED, upsideDownSwitch.isChecked());
         editor.putBoolean(PREF_REVERSE_PIPES_ENABLED, reversePipesSwitch.isChecked());
         editor.putBoolean(PREF_INFINITE_FLAP_ENABLED, infiniteFlapSwitch.isChecked());
@@ -520,7 +545,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private float parseFloat(EditText et, float defaultValue) {
         try {
-            return Float.parseFloat(et.getText().toString());
+            return Float.parseFloat(et.getText().toString().trim().replace(',', '.'));
         } catch (NumberFormatException e) {
             return defaultValue;
         }
@@ -534,45 +559,45 @@ public class SettingsActivity extends AppCompatActivity {
         setupProfileListeners(3, saveProfile3, loadProfile3, resetProfile3);
 
         resetAllButton.setOnClickListener(v -> new MaterialAlertDialogBuilder(SettingsActivity.this)
-                .setTitle("Reset All Settings")
-                .setMessage("Are you sure you want to reset all current settings to their defaults? This will not affect your saved profiles.")
-                .setPositiveButton("Reset", (dialog, which) -> {
+                .setTitle("Restaurar todos os ajustes")
+                .setMessage("Restaurar os ajustes atuais para o padrão? Seus perfis salvos serão mantidos.")
+                .setPositiveButton("Restaurar", (dialog, which) -> {
                     prefs.edit().clear().apply();
                     resetUiToDefaults();
                     saveCurrentSettings();
                     updatePreview();
-                    Toast.makeText(SettingsActivity.this, "All settings have been reset to default.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Os ajustes foram restaurados para o padrão.", Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancelar", null)
                 .show());
 
         resetProfilesButton.setOnClickListener(v -> new MaterialAlertDialogBuilder(SettingsActivity.this)
-                .setTitle("Reset All Profiles")
-                .setMessage("Are you sure you want to delete all 3 of your saved profiles? This cannot be undone.")
-                .setPositiveButton("Reset", (dialog, which) -> {
+                .setTitle("Apagar todos os perfis")
+                .setMessage("Apagar os três perfis salvos? Essa ação não pode ser desfeita.")
+                .setPositiveButton("Restaurar", (dialog, which) -> {
                     for (int i = 1; i <= 3; i++) {
                         getSharedPreferences("FlappyBirdProfile_" + i, MODE_PRIVATE).edit().clear().apply();
                     }
-                    Toast.makeText(SettingsActivity.this, "All profiles have been reset.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Todos os perfis foram apagados.", Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancelar", null)
                 .show());
 
         randomizeAllButton.setOnClickListener(v -> {
             randomizeAllSettings();
-            Toast.makeText(SettingsActivity.this, "Chaos engaged! All settings randomized.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SettingsActivity.this, "Bagunça ativada! Todos os ajustes foram sorteados.", Toast.LENGTH_SHORT).show();
         });
         
         originalModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 new MaterialAlertDialogBuilder(SettingsActivity.this)
-                    .setTitle("Enable Original Mode?")
-                    .setMessage("This will override physics, spacing, and animations to mathematically match the original v1.3 experience. Custom settings will be ignored while this mode is active.")
-                    .setPositiveButton("Enable", (dialog, which) -> {
+                    .setTitle("Ativar o modo clássico?")
+                    .setMessage("Este modo substitui a física, os espaços e as animações para reproduzir a versão clássica v1.3. Os ajustes personalizados ficam desativados enquanto ele estiver ativo.")
+                    .setPositiveButton("Ativar", (dialog, which) -> {
                          saveCurrentSettings();
                          updatePreview();
                     })
-                    .setNegativeButton("Cancel", (dialog, which) -> {
+                    .setNegativeButton("Cancelar", (dialog, which) -> {
                         buttonView.setChecked(false);
                     })
                     .show();
@@ -736,29 +761,29 @@ public class SettingsActivity extends AppCompatActivity {
             SharedPreferences.Editor profileEditor = profilePrefs.edit();
             profileEditor.clear();
             saveSettingsToEditor(profileEditor);
-            Toast.makeText(SettingsActivity.this, "Profile " + profileNum + " saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SettingsActivity.this, "Perfil " + profileNum + " salvo", Toast.LENGTH_SHORT).show();
         });
 
         loadBtn.setOnClickListener(v -> {
             SharedPreferences profilePrefs = getSharedPreferences(profilePrefsName, MODE_PRIVATE);
             if(profilePrefs.getAll().isEmpty()){
-                Toast.makeText(SettingsActivity.this, "Profile " + profileNum + " is empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingsActivity.this, "Perfil " + profileNum + " está vazio", Toast.LENGTH_SHORT).show();
                 return;
             }
             loadSettingsFromSource(profilePrefs);
             saveCurrentSettings();
-            Toast.makeText(SettingsActivity.this, "Profile " + profileNum + " loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SettingsActivity.this, "Perfil " + profileNum + " carregado", Toast.LENGTH_SHORT).show();
         });
 
         resetBtn.setOnClickListener(v -> new MaterialAlertDialogBuilder(SettingsActivity.this)
-                .setTitle("Reset Profile " + profileNum)
-                .setMessage("Are you sure you want to delete all settings saved in this profile?")
-                .setPositiveButton("Reset", (dialog, which) -> {
+                .setTitle("Apagar perfil " + profileNum)
+                .setMessage("Apagar todos os ajustes salvos neste perfil?")
+                .setPositiveButton("Restaurar", (dialog, which) -> {
                     SharedPreferences profilePrefs = getSharedPreferences(profilePrefsName, MODE_PRIVATE);
                     profilePrefs.edit().clear().apply();
-                    Toast.makeText(SettingsActivity.this, "Profile " + profileNum + " reset", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, "Perfil " + profileNum + " apagado", Toast.LENGTH_SHORT).show();
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancelar", null)
                 .show());
     }
 
@@ -797,6 +822,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        secretGestureTouch.cancel();
         super.onPause();
         if (previewView != null) {
             previewView.pause();
@@ -812,6 +838,7 @@ public class SettingsActivity extends AppCompatActivity {
         private int width, height;
 
         private Bitmap bgDayBitmap, bgNightBitmap, groundBitmap, currentBgBitmap;
+        private final Bitmap sceneOverlay = WorldArt.environment(3);
         private Bitmap pipeUpBitmap, pipeDownBitmap;
         private Bitmap[][] birdBitmaps = new Bitmap[3][3];
         private Bitmap currentBirdBitmap;
@@ -911,23 +938,16 @@ public class SettingsActivity extends AppCompatActivity {
             this.height = h;
 
             try {
-                Bitmap atlas = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.atlas, options);
-                Bitmap unscaledBgDay = Bitmap.createBitmap(atlas, 0, 0, 288, 512);
-                Bitmap unscaledBgNight = Bitmap.createBitmap(atlas, (int)(0.28515625 * 1024), 0, 288, 512);
-                Bitmap unscaledLand = Bitmap.createBitmap(atlas, (int)(0.5703125 * 1024), 0, 336, 112);
-                atlas.recycle();
+                Bitmap unscaledBgDay = WorldArt.city(getResources(), false);
+                Bitmap unscaledBgNight = WorldArt.city(getResources(), true);
+                Bitmap unscaledLand = WorldArt.ground();
 
-                birdBitmaps[0][0] = BitmapFactory.decodeResource(getResources(), R.drawable.yellowbird_upflap, options);
-                birdBitmaps[0][1] = BitmapFactory.decodeResource(getResources(), R.drawable.yellowbird_midflap, options);
-                birdBitmaps[0][2] = BitmapFactory.decodeResource(getResources(), R.drawable.yellowbird_downflap, options);
-                birdBitmaps[1][0] = BitmapFactory.decodeResource(getResources(), R.drawable.bluebird_upflap, options);
-                birdBitmaps[1][1] = BitmapFactory.decodeResource(getResources(), R.drawable.bluebird_midflap, options);
-                birdBitmaps[1][2] = BitmapFactory.decodeResource(getResources(), R.drawable.bluebird_downflap, options);
-                birdBitmaps[2][0] = BitmapFactory.decodeResource(getResources(), R.drawable.redbird_upflap, options);
-                birdBitmaps[2][1] = BitmapFactory.decodeResource(getResources(), R.drawable.redbird_midflap, options);
-                birdBitmaps[2][2] = BitmapFactory.decodeResource(getResources(), R.drawable.redbird_downflap, options);
+                Bitmap[] characters = CharacterSprites.loadVariants(getResources());
+                for (int color = 0; color < 3; color++) {
+                    for (int frame = 0; frame < 3; frame++) birdBitmaps[color][frame] = characters[color];
+                }
 
-                Bitmap unscaledPipeGreen = BitmapFactory.decodeResource(getResources(), R.drawable.pipe_green, options);
+                Bitmap unscaledPipeGreen = WorldArt.wall(3);
 
                 float scale = (float) this.height / unscaledBgDay.getHeight();
                 int bgWidth = (int) (unscaledBgDay.getWidth() * scale);
@@ -1154,6 +1174,10 @@ public class SettingsActivity extends AppCompatActivity {
             
             if (weather > 0 && !isOriginalMode) weatherSystem.drawBack(canvas);
 
+            canvas.save();
+            canvas.scale(width / 288f, height / 512f);
+            canvas.drawBitmap(sceneOverlay, 0, 0, pixelPaint);
+            canvas.restore();
             pipePaint.setColorFilter(createPipeColorFilter(pipeColor));
             float visualPipeWidth = pipeUpBitmap.getWidth() * (isOriginalMode ? 1.0f : pipeWidthMultiplier);
             float pipeDrawX = pipeX - (visualPipeWidth - pipeUpBitmap.getWidth()) / 2f;
@@ -1445,7 +1469,7 @@ public class SettingsActivity extends AppCompatActivity {
         static class Pipe {
             private static float pipeHeadWidth, pipeHeadHeight, pipeBodyWidth, pipeBodyOffsetX;
             public static void initHitboxDimensions(float scale) {
-                pipeHeadWidth = 52 * scale; pipeHeadHeight = 24 * scale; pipeBodyWidth = 48 * scale;
+                pipeHeadWidth = 52 * scale; pipeHeadHeight = 24 * scale; pipeBodyWidth = 52 * scale;
                 pipeBodyOffsetX = (pipeHeadWidth - pipeBodyWidth) / 2.0f;
             }
         }

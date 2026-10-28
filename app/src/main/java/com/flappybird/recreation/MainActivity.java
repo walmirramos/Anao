@@ -65,11 +65,49 @@ import static com.flappybird.recreation.SettingsActivity.*;
 public class MainActivity extends AppCompatActivity {
 
     private GameView gameView;
+    private LoadingView loadingView;
+    private final ExecutorService assetLoader = Executors.newSingleThreadExecutor();
+    private boolean foreground;
+
+    boolean isForeground() { return foreground; }
+
+    private void startLoading(FrameLayout container) {
+        if (loadingView != null) container.removeView(loadingView);
+        loadingView = new LoadingView(this);
+        container.addView(loadingView);
+        assetLoader.submit(() -> {
+            try {
+                GameAssets assets = new GameAssets(getResources());
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) { assets.recycle(); return; }
+                    gameView = new GameView(this, assets, () -> {
+                        container.removeView(loadingView);
+                        loadingView = null;
+                        if (foreground) gameView.resume(); else gameView.pause();
+                    });
+                    container.addView(gameView, 0);
+                    ViewCompat.requestApplyInsets(gameView);
+                });
+            } catch (RuntimeException error) {
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed() || loadingView == null) return;
+                    loadingView.showError();
+                    loadingView.setOnClickListener(view -> startLoading(container));
+                });
+            }
+        });
+    }
+
+    @Override protected void onDestroy() {
+        assetLoader.shutdownNow();
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        PixelFont.init(this);
         
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -80,13 +118,13 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.main);
         FrameLayout gameContainer = findViewById(R.id.game_container);
-        gameView = new GameView(this);
-        gameContainer.addView(gameView);
+        startLoading(gameContainer);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        foreground = true;
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
@@ -95,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        foreground = false;
         super.onPause();
         if (gameView != null) gameView.pause();
     }
@@ -111,7 +150,7 @@ class GameView extends View implements Choreographer.FrameCallback {
     private enum GameState { HOME, TRANSITION_TO_WAITING, WAITING, PLAYING, GAME_OVER, PANEL_SLIDING }
     private GameState gameState = GameState.HOME;
     private Choreographer choreographer;
-    private boolean isRunning = false;
+    private volatile boolean isRunning = false;
     private boolean isReady = false;
     private long lastFrameTimeNanos = 0;
     private int screenWidth, screenHeight;
@@ -126,16 +165,154 @@ class GameView extends View implements Choreographer.FrameCallback {
     private Bitmap unscaledBgDay, unscaledBgNight, unscaledLand;
     private Bitmap unscaledPipeGreen;
     private Bitmap[][] unscaledAllBirdBitmaps = new Bitmap[3][3];
-    private Bitmap unscaledTextReady, unscaledTextGameOver, unscaledScorePanel, unscaledButtonPlay, unscaledButtonScore, unscaledTitle, unscaledCopyright, unscaledButtonSettings;
+    private Bitmap unscaledTextReady, unscaledTextGameOver, unscaledScorePanel, unscaledButtonPlay, unscaledButtonScore, unscaledTitle, unscaledButtonSettings;
     private Bitmap[] unscaledMedalsBitmaps = new Bitmap[4];
     private Bitmap[] unscaledNumberBitmaps = new Bitmap[10];
     
     private Bitmap bgDayBitmap, bgNightBitmap, groundBitmap;
     private Bitmap pipeUpBitmap, pipeDownBitmap;
+    private Bitmap[] wallBottoms = new Bitmap[WorldArt.WALL_STYLES], wallTops = new Bitmap[WorldArt.WALL_STYLES];
+    private final GameAssets preparedAssets;
+    private final Runnable onReady;
+    private int sceneVariant;
+    private final GroundImpactEffect groundImpact = new GroundImpactEffect();
+    private FallingGunfire fallingGunfire;
+    private final PowerUpState powerUps = new PowerUpState();
+    private final Bitmap bananaBitmap = BonusArt.banana();
+    private final Bitmap phoneBitmap = BonusArt.phone();
+    private final Bitmap bazookaBitmap = BonusArt.bazooka();
+    private final BonusArt bonusArt = new BonusArt();
+    private final WallBlastEffects wallBlasts = new WallBlastEffects();
+    private final SkyTraffic skyTraffic = new SkyTraffic();
+    private Pipe bonusPipe, rocketTarget;
+    private float bonusX, bonusY, rocketX, rocketY, rocketCooldown;
+    private int rocketGeneration, bonusGeneration;
+    private int soundAura, soundAuraActivate, soundBazooka, auraStream;
+
+    private void stopAuraSound() {
+        if (auraStream != 0 && soundPool != null) soundPool.stop(auraStream);
+        auraStream = 0;
+    }
+
+    private void syncAuraSound() {
+        if (!isRunning || !settingSoundEnabled || !powerUps.active(PowerUpState.Kind.SAYAJIN) || gameState != GameState.PLAYING) {
+            stopAuraSound();
+        } else if (auraStream == 0 && soundPool != null) {
+            auraStream = soundPool.play(soundAura, .28f, .28f, 1, -1, 1f);
+        }
+    }
+
+    private float topWallY(Pipe pipe) { return pipe.status.top(pipe.getTopPipeY()); }
+    private float bottomWallY(Pipe pipe) { return pipe.status.bottom(pipe.getBottomPipeY(pipeGap)); }
+
+    private void updateWallOpenings(float seconds) {
+        float extra=Math.min(pipeGap*.5f,64*scale);
+        for(Pipe pipe:pipes) {
+            float width=pipe.width*settingPipeWidth;
+            float left=pipe.x-(width-pipe.width)/2f;
+            boolean crossing=birdRect.right+8*scale>left && birdRect.left-8*scale<left+width;
+            pipe.status.updateOpening(powerUps.active(PowerUpState.Kind.CELULAR),extra,seconds,crossing);
+        }
+    }
+
+    private void updatePowerUps() {
+        if (powerUps.shouldSpawn(score)) {
+            Pipe target = null;
+            float nearest = Float.MAX_VALUE;
+            for (Pipe pipe : pipes) {
+                float center = pipe.x + pipe.width / 2f;
+                float distance = (center - birdX) * (settingReversePipesEnabled ? -1 : 1);
+                if (!pipe.status.isDestroyed() && distance > 40 * scale && distance < nearest) { nearest = distance; target = pipe; }
+            }
+            if (target != null) {
+                bonusPipe = target;
+                bonusGeneration=target.status.generation();
+                powerUps.spawned(score, 10 + random.nextInt(16));
+            }
+        }
+        if(bonusPipe!=null && bonusPipe.status.generation()!=bonusGeneration) {
+            powerUps.miss(); bonusPipe=null;
+        }
+        if (powerUps.visible() && bonusPipe != null) {
+            bonusX = bonusPipe.x + bonusPipe.width / 2f;
+            bonusY = (topWallY(bonusPipe)+bonusPipe.height+bottomWallY(bonusPipe))/2f;
+            float radius = 10 * scale;
+            if (birdRect.right > bonusX - radius && birdRect.left < bonusX + radius &&
+                    birdRect.bottom > bonusY - radius && birdRect.top < bonusY + radius) {
+                if (powerUps.collect()) {
+                    playSound(powerUps.active(PowerUpState.Kind.SAYAJIN) ? soundAuraActivate : soundSwooshing);
+                    updateWallOpenings(0); syncAuraSound();
+                    rocketCooldown=0;
+                }
+                bonusPipe = null;
+            } else if ((bonusX - birdX) * (settingReversePipesEnabled ? -1 : 1) < -30 * scale) {
+                powerUps.miss(); bonusPipe = null;
+            }
+        }
+    }
+
+    private void destroyWall(Pipe pipe) {
+        if(!pipe.status.destroy()) return;
+        float width=pipe.width*settingPipeWidth;
+        wallBlasts.explode(pipe.x-(width-pipe.width)/2f,topWallY(pipe)+pipe.height,
+                bottomWallY(pipe),width,screenHeight-systemBarBottom-groundHeight,
+                pipe.wallStyle,settingReversePipesEnabled);
+        playSound(soundBazooka);
+        triggerShake(1.8f,.16f);
+    }
+
+    private void updateBazooka(float seconds) {
+        if(!powerUps.active(PowerUpState.Kind.BAZUCA)) {
+            rocketTarget=null; rocketCooldown=0; return;
+        }
+        float direction=settingReversePipesEnabled ? -1 : 1;
+        rocketCooldown=Math.max(0,rocketCooldown-seconds);
+        // Use the real hitbox so enlarged custom characters also get timely wall blasts.
+        for(Pipe pipe:pipes) {
+            float width=pipe.width*settingPipeWidth;
+            float left=pipe.x-(width-pipe.width)/2f;
+            if(!pipe.status.isDestroyed() && BazookaTargeting.imminent(birdRect.left,birdRect.right,
+                    left,left+width,settingReversePipesEnabled,8*scale)) destroyWall(pipe);
+        }
+        if(rocketTarget!=null && (rocketTarget.status.isDestroyed() ||
+                rocketTarget.status.generation()!=rocketGeneration)) rocketTarget=null;
+        if(rocketTarget==null && rocketCooldown<=0) {
+            float nearest=Float.MAX_VALUE;
+            for(Pipe pipe:pipes) {
+                float width=pipe.width*settingPipeWidth;
+                float center=pipe.x+pipe.width/2f;
+                float left=center-width/2f;
+                float distance=(center-birdX)*direction;
+                if(!pipe.status.isDestroyed() && BazookaTargeting.ahead(birdRect.left,birdRect.right,
+                        left,left+width,settingReversePipesEnabled) && distance<screenWidth && distance<nearest) {
+                    rocketTarget=pipe; nearest=distance;
+                }
+            }
+            if(rocketTarget!=null) {
+                rocketGeneration=rocketTarget.status.generation();
+                rocketX=birdX+direction*25*scale*settingBirdSize;
+                rocketY=birdY+11*scale*settingBirdSize;
+                rocketCooldown=.5f;
+            }
+        }
+        if(rocketTarget==null) return;
+        float tx=rocketTarget.x+rocketTarget.width/2f;
+        float upper=topWallY(rocketTarget)+rocketTarget.height;
+        float lower=bottomWallY(rocketTarget);
+        float ty=Math.abs(upper-rocketY)<Math.abs(lower-rocketY) ? upper-4*scale : lower+4*scale;
+        float dx=tx-rocketX,dy=ty-rocketY;
+        float distance=(float)Math.sqrt(dx*dx+dy*dy);
+        float step=(Math.abs(PIPE_SPEED_PER_SEC)+480*scale)*seconds;
+        if(distance<=step+4*scale) {
+            destroyWall(rocketTarget); rocketTarget=null;
+        } else {
+            rocketX+=dx/distance*step; rocketY+=dy/distance*step;
+        }
+    }
     private Bitmap backgroundBitmap, currentPipeTopBitmap, currentPipeBottomBitmap;
     private Bitmap[][] scaledAllBirdBitmaps = new Bitmap[3][3];
     private Bitmap[] birdBitmaps = new Bitmap[3];
-    private Bitmap getReadyBitmap, gameOverBitmap, scorePanelBitmap, playButtonBitmap, scoreButtonBitmap, titleBitmap, copyrightBitmap, settingsButtonBitmap;
+    private Bitmap getReadyBitmap, gameOverBitmap, scorePanelBitmap, playButtonBitmap, scoreButtonBitmap, titleBitmap, settingsButtonBitmap;
     private Bitmap[] medalBitmaps = new Bitmap[4];
     private Bitmap currentMedalBitmap;
     private Bitmap[] numberBitmaps = new Bitmap[10];
@@ -160,7 +337,8 @@ class GameView extends View implements Choreographer.FrameCallback {
 
     // Audio & Haptics
     private SoundPool soundPool;
-    private int soundWing, soundPoint, soundHit, soundDie, soundSwooshing, soundThunder;
+    private RetroAudio retroAudio;
+    private int soundWing, soundPoint, soundHit, soundDie, soundSwooshing, soundThunder, soundShot;
     private ExecutorService soundExecutor;
     private MediaPlayer rainSoundPlayer, stormSoundPlayer;
     private Vibrator vibrator;
@@ -244,6 +422,11 @@ class GameView extends View implements Choreographer.FrameCallback {
     private float settingBgScrollSpeed, settingGroundScrollSpeed, settingDrunkModeStrength;
     private float settingScreenShakeStrength, settingMotionBlurStrength;
     private boolean settingSoundEnabled, settingNoClipEnabled, settingWingAnimationEnabled;
+    private final SecretGestureTouch secretGestureTouch = new SecretGestureTouch();
+    private boolean waitingTouch;
+    private float secretTouchX, secretTouchY, secretTouchTravel;
+    private long secretNoticeUntil;
+    private final Paint secretStatusText = WorldArt.textPaint(12), secretStatusBackground = new Paint();
     private boolean settingMovingPipesEnabled, settingHideSettingsIcon, settingRainbowBirdEnabled;
     private boolean settingUpsideDownEnabled, settingReversePipesEnabled, settingHapticFeedbackEnabled;
     private boolean settingBirdTrailEnabled, settingGhostModeEnabled, settingRandomPipeColorsEnabled;
@@ -327,8 +510,10 @@ class GameView extends View implements Choreographer.FrameCallback {
     private final float SPARKLE_DURATION = 0.6f; 
     private final float SPARKLE_INTERVAL = 2.0f; 
     
-    public GameView(Context context) {
+    public GameView(Context context, GameAssets assets, Runnable ready) {
         super(context);
+        preparedAssets = assets;
+        onReady = ready;
         init(context);
     }
 
@@ -356,6 +541,7 @@ class GameView extends View implements Choreographer.FrameCallback {
         choreographer = Choreographer.getInstance();
         extractBitmapsFromAtlas();
         loadSounds();
+        retroAudio = new RetroAudio(context);
         soundExecutor = Executors.newSingleThreadExecutor();
         vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -451,7 +637,7 @@ class GameView extends View implements Choreographer.FrameCallback {
         settingMovingPipesEnabled = prefs.getBoolean(PREF_MOVING_PIPES_ENABLED, DEFAULT_MOVING_PIPES_ENABLED);
         settingPipeMoveTier1 = prefs.getInt(PREF_PIPE_MOVE_TIER_1_SCORE, DEFAULT_PIPE_MOVE_TIER_1_SCORE);
         settingPipeMoveTier2 = prefs.getInt(PREF_PIPE_MOVE_TIER_2_SCORE, DEFAULT_PIPE_MOVE_TIER_2_SCORE);
-        settingNoClipEnabled = prefs.getBoolean(PREF_NO_CLIP_ENABLED, DEFAULT_NO_CLIP_ENABLED);
+        settingNoClipEnabled = SecretInvincibility.isEnabled();
         settingRainbowBirdEnabled = prefs.getBoolean(PREF_RAINBOW_BIRD_ENABLED, DEFAULT_RAINBOW_BIRD_ENABLED);
         settingUpsideDownEnabled = prefs.getBoolean(PREF_UPSIDE_DOWN_ENABLED, DEFAULT_UPSIDE_DOWN_ENABLED);
         settingReversePipesEnabled = prefs.getBoolean(PREF_REVERSE_PIPES_ENABLED, DEFAULT_REVERSE_PIPES_ENABLED);
@@ -551,11 +737,17 @@ class GameView extends View implements Choreographer.FrameCallback {
 
         isReady = true;
         resume();
+        post(onReady);
     }
 
     private int getPlayableHeight() { return screenHeight - systemBarTop - systemBarBottom; }
 
     private void resetGame() {
+        sceneVariant = random.nextInt(4);
+        groundImpact.reset();
+        powerUps.reset(); bonusPipe = null; rocketTarget=null; rocketCooldown=0;
+        wallBlasts.clear(); skyTraffic.reset(); stopAuraSound();
+        if (fallingGunfire != null) fallingGunfire.land();
         loadSettings();
         
         // Standard Custom Mode
@@ -682,7 +874,9 @@ class GameView extends View implements Choreographer.FrameCallback {
     }
 
     private void update(float deltaTime) {
-        float realDeltaTime = deltaTime; 
+        float realDeltaTime = deltaTime;
+        groundImpact.update(realDeltaTime); 
+        wallBlasts.tick(realDeltaTime,gameState==GameState.PLAYING ? PIPE_SPEED_PER_SEC : 0);
         float gameDeltaTime = deltaTime * timeDilation;
 
         if (flashAlpha > 0) {
@@ -946,6 +1140,8 @@ class GameView extends View implements Choreographer.FrameCallback {
                     birdFrame = 1;
                     if (birdHitGroundTime == 0) {
                         birdHitGroundTime = System.currentTimeMillis();
+                        if (fallingGunfire != null) fallingGunfire.land();
+                        groundImpact.emit(birdX, settingUpsideDownEnabled ? systemBarTop : groundTopY, scale, settingUpsideDownEnabled);
                         if(settingScreenShakeEnabled) triggerShake(5.0f, 0.4f);
                     }
 
@@ -1133,7 +1329,13 @@ class GameView extends View implements Choreographer.FrameCallback {
             }
         }
         
-        if (gameState == GameState.PLAYING) { checkCollisions(); }
+        if (gameState == GameState.PLAYING) {
+            updateBirdRect();
+            updateWallOpenings(realDeltaTime);
+            updatePowerUps();
+            updateBazooka(gameDeltaTime);
+            checkCollisions();
+        }
     }
     
     // --- CINEMATIC ENGINE LOGIC ---
@@ -1242,13 +1444,18 @@ class GameView extends View implements Choreographer.FrameCallback {
             }
         }
 
-        for (Pipe pipe : pipes) {
-            if (Rect.intersects(birdRect, pipe.getTopHeadRect(settingPipeWidth)) ||
-                    Rect.intersects(birdRect, pipe.getTopBodyRect(settingPipeWidth)) ||
-                    Rect.intersects(birdRect, pipe.getBottomHeadRect(pipeGap, settingPipeWidth)) ||
-                    Rect.intersects(birdRect, pipe.getBottomBodyRect(pipeGap, settingPipeWidth))) {
+        if (powerUps.active(PowerUpState.Kind.SAYAJIN)) return;
 
-                gameOver(); return;
+        for (Pipe pipe : pipes) {
+            if(pipe.status.isDestroyed()) continue;
+            float visualWidth = pipe.width * settingPipeWidth;
+            float wallX = pipe.x - (visualWidth - pipe.width) / 2f;
+            boolean[] mask = preparedAssets.wallMasks[pipe.wallStyle];
+            if (WallCollision.intersects(mask, birdRect.left, birdRect.top, birdRect.right, birdRect.bottom,
+                    wallX, topWallY(pipe), visualWidth, pipe.height, true) ||
+                WallCollision.intersects(mask, birdRect.left, birdRect.top, birdRect.right, birdRect.bottom,
+                    wallX, bottomWallY(pipe), visualWidth, pipe.height, false)) {
+                gameOver(true); return;
             }
         }
     }
@@ -1270,9 +1477,12 @@ class GameView extends View implements Choreographer.FrameCallback {
         }
     }
 
-    private void gameOver() {
+    private void gameOver() { gameOver(false); }
+
+    private void gameOver(boolean wallImpact) {
         if (gameState == GameState.PLAYING) {
             gameState = GameState.GAME_OVER;
+            powerUps.end(); bonusPipe = null; rocketTarget=null; stopAuraSound();
             
             cinematicPhase = 0;
             cameraZoom = 1.0f;
@@ -1280,7 +1490,8 @@ class GameView extends View implements Choreographer.FrameCallback {
             
             flashAlpha = 255f;
             stopWeatherSounds();
-            playSound(soundHit);
+            if (wallImpact && fallingGunfire != null) fallingGunfire.begin(settingSoundEnabled && isRunning);
+            else playSound(soundHit);
             triggerShake(5.0f, 0.4f);
             postDelayed(() -> playSound(soundDie), 300);
             if (score > highScore) { highScore = score; prefs.edit().putInt("highScore", highScore).apply();
@@ -1355,6 +1566,19 @@ class GameView extends View implements Choreographer.FrameCallback {
             }
         }
 
+        for (float x = startBgX - bgDrawWidth; x < screenWidth + bgDrawWidth; x += bgDrawWidth) {
+            canvas.save();
+            canvas.translate(x, 0);
+            canvas.scale(bgDrawWidth / 288f, screenHeight / 512f);
+            canvas.drawBitmap(preparedAssets.environments[StageProgression.environment(score, sceneVariant)], 0, 0, pixelPaint);
+            canvas.restore();
+        }
+
+        canvas.save();
+        canvas.scale(screenWidth/288f,screenHeight/512f);
+        skyTraffic.draw(canvas,pixelPaint);
+        canvas.restore();
+
         if (settingWeatherEffect > 0) {
              weatherSystem.drawBack(canvas);
         }
@@ -1362,30 +1586,31 @@ class GameView extends View implements Choreographer.FrameCallback {
         // Draw Pipes
         if (gameState != GameState.HOME && !(gameState == GameState.TRANSITION_TO_WAITING && isFadingOut)) {
             for (Pipe pipe : pipes) {
+                if(pipe.status.isDestroyed()) continue;
                 float visualPipeWidth = pipe.width * settingPipeWidth;
                 float xPos = pipe.x - (visualPipeWidth - pipe.width) / 2f;
 
-                pipeDestRect.set(xPos, pipe.getTopPipeY(), xPos + visualPipeWidth, pipe.getTopPipeY() + pipe.height);
-                canvas.drawBitmap(currentPipeTopBitmap, null, pipeDestRect, pipe.pipePaint);
+                pipeDestRect.set(xPos, topWallY(pipe), xPos + visualPipeWidth, topWallY(pipe) + pipe.height);
+                canvas.drawBitmap(wallTops[pipe.wallStyle], null, pipeDestRect, pipe.pipePaint);
                 
                 if (pipeElectrificationTimer > 0) {
-                     drawPipeElectricity(canvas, xPos, pipe.getTopPipeY(), visualPipeWidth, pipe.height);
+                     drawPipeElectricity(canvas, xPos, topWallY(pipe), visualPipeWidth, pipe.height);
                 }
 
-                pipeDestRect.set(xPos, pipe.getBottomPipeY(pipeGap), xPos + visualPipeWidth, pipe.getBottomPipeY(pipeGap) + pipe.height);
-                canvas.drawBitmap(currentPipeBottomBitmap, null, pipeDestRect, pipe.pipePaint);
+                pipeDestRect.set(xPos, bottomWallY(pipe), xPos + visualPipeWidth, bottomWallY(pipe) + pipe.height);
+                canvas.drawBitmap(wallBottoms[pipe.wallStyle], null, pipeDestRect, pipe.pipePaint);
 
                 if (pipeElectrificationTimer > 0) {
-                     drawPipeElectricity(canvas, xPos, pipe.getBottomPipeY(pipeGap), visualPipeWidth, pipe.height);
+                     drawPipeElectricity(canvas, xPos, bottomWallY(pipe), visualPipeWidth, pipe.height);
                 }
 
                 if (pipe.isGolden) {
                     gradientMatrix.setTranslate(goldenPipeHue, 0);
                     goldenPipeShader.setLocalMatrix(gradientMatrix);
 
-                    pipeDestRect.set(xPos, pipe.getTopPipeY(), xPos + visualPipeWidth, pipe.getTopPipeY() + pipe.height);
+                    pipeDestRect.set(xPos, topWallY(pipe), xPos + visualPipeWidth, topWallY(pipe) + pipe.height);
                     canvas.drawRect(pipeDestRect, goldenPipePaint);
-                    pipeDestRect.set(xPos, pipe.getBottomPipeY(pipeGap), xPos + visualPipeWidth, pipe.getBottomPipeY(pipeGap) + pipe.height);
+                    pipeDestRect.set(xPos, bottomWallY(pipe), xPos + visualPipeWidth, bottomWallY(pipe) + pipe.height);
                     canvas.drawRect(pipeDestRect, goldenPipePaint);
                 }
             }
@@ -1407,6 +1632,19 @@ class GameView extends View implements Choreographer.FrameCallback {
             p.draw(canvas);
         }
 
+        wallBlasts.draw(canvas,pixelPaint);
+        if(rocketTarget!=null) bonusArt.rocket(canvas,rocketX,rocketY,scale,settingReversePipesEnabled);
+
+        if (powerUps.visible()) {
+            Bitmap item=powerUps.collectibleKind()==PowerUpState.Kind.CELULAR ? phoneBitmap :
+                    powerUps.collectibleKind()==PowerUpState.Kind.BAZUCA ? bazookaBitmap : bananaBitmap;
+            float itemScale=20*scale/Math.max(item.getWidth(),item.getHeight());
+            canvas.save(); canvas.translate(bonusX-item.getWidth()*itemScale/2f,bonusY-item.getHeight()*itemScale/2f);
+            canvas.scale(itemScale,itemScale);
+            canvas.drawBitmap(item, 0, 0, pixelPaint); canvas.restore();
+        }
+        if (powerUps.active(PowerUpState.Kind.SAYAJIN)) bonusArt.aura(canvas, birdX, birdY, scale * settingBirdSize,
+                android.os.SystemClock.uptimeMillis() / 1000.0);
         drawBirdTrail(canvas);
 
         birdPaint.setColorFilter(null);
@@ -1436,6 +1674,9 @@ class GameView extends View implements Choreographer.FrameCallback {
         birdPaint.setAlpha(255);
         birdPaint.setColorFilter(null); // Reset filter
 
+        if(powerUps.active(PowerUpState.Kind.BAZUCA))
+            bonusArt.heldBazooka(canvas,birdX,birdY,scale*settingBirdSize,settingReversePipesEnabled);
+
         // Draw Sparks (Over bird)
         for (SparkParticle sp : sparkParticles) {
             sp.draw(canvas, sparkPaint);
@@ -1445,6 +1686,8 @@ class GameView extends View implements Choreographer.FrameCallback {
              weatherSystem.drawFront(canvas);
              weatherSystem.drawLightingOverlay(canvas, screenWidth, screenHeight);
         }
+
+        groundImpact.draw(canvas);
 
         // --- END CAMERA TRANSFORM ---
         canvas.restore();
@@ -1459,7 +1702,22 @@ class GameView extends View implements Choreographer.FrameCallback {
         } else if (gameState == GameState.WAITING) {
             drawCenteredBitmap(canvas, getReadyBitmap, -(int) (getPlayableHeight() * 0.15));
         } else if (gameState == GameState.PLAYING) {
+            WorldArt.coinLabel(canvas, screenWidth / 2f, systemBarTop + getPlayableHeight() * 0.15f - 25 * scale, scale);
             drawScoreWithImages(canvas, score, screenWidth / 2, systemBarTop + (int) (getPlayableHeight() * 0.15));
+            if (powerUps.active()) {
+                Paint bonusLabel = WorldArt.textPaint(11 * scale);
+                bonusLabel.setColor(powerUps.active(PowerUpState.Kind.CELULAR) ? 0xff8be6ff : 0xffffdb4f);
+                String name=powerUps.active(PowerUpState.Kind.CELULAR) ? "CELULAR / VÃO MAIOR" :
+                        powerUps.active(PowerUpState.Kind.BAZUCA) ? "BAZUCA" : "SAYAJIN";
+                canvas.drawText(name + " / " + (int)Math.ceil(powerUps.remaining()) + "s",
+                        screenWidth / 2f, systemBarTop + getPlayableHeight() * .15f + 45 * scale, bonusLabel);
+            }
+            if (score >= 20) {
+                Paint stageLabel = WorldArt.textPaint(8 * scale);
+                stageLabel.setColor(Color.rgb(255,226,154));
+                canvas.drawText(score >= 40 ? "FASE 3 / LIXÃO TÓXICO" : "FASE 2 / LIXÃO POLUÍDO",
+                        screenWidth / 2f, systemBarTop + getPlayableHeight() * .15f + 28 * scale, stageLabel);
+            }
         } else if (gameState == GameState.PANEL_SLIDING || gameState == GameState.GAME_OVER) {
             if (darkenPaint.getAlpha() > 0) {
                 canvas.drawRect(0, 0, screenWidth, screenHeight, darkenPaint);
@@ -1475,6 +1733,16 @@ class GameView extends View implements Choreographer.FrameCallback {
         if (flashAlpha > 0) {
             flashPaint.setAlpha((int) flashAlpha);
             canvas.drawRect(0, 0, screenWidth, screenHeight, flashPaint);
+        }
+        if (settingNoClipEnabled || android.os.SystemClock.uptimeMillis()<secretNoticeUntil) {
+            String status=settingNoClipEnabled ? "INVENCIBILIDADE ATIVADA" : "INVENCIBILIDADE DESATIVADA";
+            secretStatusText.setTextSize(11*scale);
+            secretStatusText.setColor(settingNoClipEnabled ? 0xffa6ffe1 : 0xffffd889);
+            float half=Math.min(screenWidth/2f-6*scale,secretStatusText.measureText(status)/2f+7*scale);
+            float y=screenHeight-systemBarBottom-groundHeight+20*scale;
+            secretStatusBackground.setColor(0xee102a32);
+            canvas.drawRect(screenWidth/2f-half,y-12*scale,screenWidth/2f+half,y+5*scale,secretStatusBackground);
+            canvas.drawText(status,screenWidth/2f,y,secretStatusText);
         }
     }
     
@@ -1501,13 +1769,41 @@ class GameView extends View implements Choreographer.FrameCallback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        final int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            waitingTouch = gameState == GameState.WAITING;
+            secretTouchX = event.getX(); secretTouchY = event.getY();
+            secretTouchTravel=0;
+        }
+        for(int i=0;i<event.getHistorySize();i++) {
+            secretTouchTravel=Math.max(secretTouchTravel,Math.max(Math.abs(event.getHistoricalX(i)-secretTouchX),
+                    Math.abs(event.getHistoricalY(i)-secretTouchY)));
+        }
+        secretTouchTravel=Math.max(secretTouchTravel,Math.max(Math.abs(event.getX()-secretTouchX),
+                Math.abs(event.getY()-secretTouchY)));
+        if(secretGestureTouch.onTouchEvent(event,screenWidth,screenHeight)) {
+            settingNoClipEnabled=SecretInvincibility.toggle();
+            secretNoticeUntil=android.os.SystemClock.uptimeMillis()+4000;
+            isScreenPressed=false; waitingTouch=false; pressedButtonRect=null;
+            settingsButtonTargetScale=1f;
+            android.widget.Toast.makeText(getContext(),settingNoClipEnabled ? "Invencibilidade ativada" :
+                    "Invencibilidade desativada",android.widget.Toast.LENGTH_SHORT).show();
+            if(settingHapticFeedbackEnabled) performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+            invalidate();return true;
+        }
+        if(event.getPointerCount()>1 || action==MotionEvent.ACTION_POINTER_DOWN ||
+                action==MotionEvent.ACTION_POINTER_UP || action==MotionEvent.ACTION_CANCEL) {
+            isScreenPressed=false; waitingTouch=false; pressedButtonRect=null;
+            settingsButtonTargetScale=1f;
+            invalidate();return true;
+        }
         int touchX = (int) event.getX();
         int touchY = (int) event.getY();
         if (settingUpsideDownEnabled) {
             touchY = screenHeight - touchY;
         }
 
-        switch (event.getAction()) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
                 isScreenPressed = true;
                 pressedButtonRect = null;
@@ -1521,9 +1817,7 @@ class GameView extends View implements Choreographer.FrameCallback {
                         settingsButtonTargetScale = 0.85f;
                     }
                 } else if (gameState == GameState.WAITING) {
-                    gameState = GameState.PLAYING;
-                    updateWeatherSounds();
-                    if (!settingJetpackModeEnabled) flap();
+                    // Wait for release so a deliberate secret stroke does not begin a run.
                 } else if (gameState == GameState.PLAYING) {
                     if (!settingJetpackModeEnabled) flap();
                 } else if (gameState == GameState.PANEL_SLIDING && gameOverElementsY == gameOverElementsTargetY && !isRestarting) {
@@ -1539,12 +1833,27 @@ class GameView extends View implements Choreographer.FrameCallback {
                 break;
             case MotionEvent.ACTION_UP:
                 isScreenPressed = false;
-                settingsButtonTargetScale = 1.0f; 
+                settingsButtonTargetScale = 1.0f;
+                float tapSlop = Math.max(18f, screenWidth * .04f);
+                if(secretTouchTravel>=tapSlop) pressedButtonRect=null;
+                if (waitingTouch && gameState == GameState.WAITING) {
+                    waitingTouch = false;
+                    if (secretTouchTravel < tapSlop) {
+                        gameState = GameState.PLAYING;
+                        updateWeatherSounds();
+                        if (!settingJetpackModeEnabled) flap();
+                    }
+                }
                 
                 if (pressedButtonRect != null && pressedButtonRect.contains(touchX, touchY)) {
                     if (gameState == GameState.HOME) {
                         if (pressedButtonRect == playButtonRect) {
                             gameState = GameState.TRANSITION_TO_WAITING; isFadingOut = true; playSound(soundSwooshing);
+                        } else if (pressedButtonRect == scoreButtonRect) {
+                            new MaterialAlertDialogBuilder(getContext())
+                                .setTitle("Nencoins")
+                                .setMessage("Seu recorde: " + highScore + " Nencoins")
+                                .setPositiveButton("Voltar", null).show();
                         } else if (pressedButtonRect == settingsButtonRect) {
                             playSound(soundSwooshing);
                             Intent intent = new Intent(getContext(), SettingsActivity.class);
@@ -1692,10 +2001,8 @@ class GameView extends View implements Choreographer.FrameCallback {
 
         canvas.drawBitmap(playButtonBitmap, null, playButtonDestRect, pixelPaint);
         canvas.drawBitmap(scoreButtonBitmap, null, scoreButtonDestRect, pixelPaint);
-        float copyrightX = (screenWidth - copyrightBitmap.getWidth()) / 2f;
         float groundLineY = screenHeight - systemBarBottom - groundHeight;
-        float copyrightY = groundLineY + (groundHeight - copyrightBitmap.getHeight()) / 2f;
-        canvas.drawBitmap(copyrightBitmap, copyrightX, copyrightY, pixelPaint);
+        WorldArt.brand(canvas, screenWidth / 2f, groundLineY + groundHeight * .46f, scale);
     }
 
     private void drawGameOverScreen(Canvas canvas) {
@@ -1861,9 +2168,9 @@ class GameView extends View implements Choreographer.FrameCallback {
 
     private void showAspectRatioWarning() {
         new MaterialAlertDialogBuilder(getContext())
-                .setTitle("Display Notice")
-                .setMessage("Flappy Bird is not optimized for this screen's aspect ratio. You may encounter visual issues. For the best experience, a device with a smaller screen (and preferably Android 14+) is recommended.")
-                .setPositiveButton("Continue", (dialog, which) -> {
+                .setTitle("Sobre esta tela")
+                .setMessage("O jogo pode apresentar diferenças visuais nesta proporção de tela. A experiência é melhor em um celular no modo retrato.")
+                .setPositiveButton("Continuar", (dialog, which) -> {
                     prefs.edit().putBoolean(PREF_KEY_WARNING_SHOWN, true).apply();
                     dialog.dismiss();
                 })
@@ -1878,41 +2185,28 @@ class GameView extends View implements Choreographer.FrameCallback {
     private void extractBitmapsFromAtlas() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
-        Bitmap atlas = BitmapFactory.decodeResource(getResources(), R.drawable.atlas, options);
-        final int ATLAS_WIDTH = 1024, ATLAS_HEIGHT = 1024;
-        unscaledBgDay = extract(atlas, loc(0.0, ATLAS_WIDTH), loc(0.0, ATLAS_HEIGHT), 288, 512);
-        unscaledBgNight = extract(atlas, loc(0.28515625, ATLAS_WIDTH), loc(0.0, ATLAS_HEIGHT), 288, 512);
-        unscaledLand = extract(atlas, loc(0.5703125, ATLAS_WIDTH), loc(0.0, ATLAS_HEIGHT), 336, 112);
+        unscaledBgDay = preparedAssets.day;
+        unscaledBgNight = preparedAssets.night;
+        unscaledLand = preparedAssets.ground;
 
-        unscaledPipeGreen = BitmapFactory.decodeResource(getResources(), R.drawable.pipe_green, options);
+        unscaledPipeGreen = preparedAssets.walls[0];
 
-        unscaledAllBirdBitmaps[0][0] = BitmapFactory.decodeResource(getResources(), R.drawable.yellowbird_upflap, options);
-        unscaledAllBirdBitmaps[0][1] = BitmapFactory.decodeResource(getResources(), R.drawable.yellowbird_midflap, options);
-        unscaledAllBirdBitmaps[0][2] = BitmapFactory.decodeResource(getResources(), R.drawable.yellowbird_downflap, options);
-        unscaledAllBirdBitmaps[1][0] = BitmapFactory.decodeResource(getResources(), R.drawable.bluebird_upflap, options);
-        unscaledAllBirdBitmaps[1][1] = BitmapFactory.decodeResource(getResources(), R.drawable.bluebird_midflap, options);
-        unscaledAllBirdBitmaps[1][2] = BitmapFactory.decodeResource(getResources(), R.drawable.bluebird_downflap, options);
-        unscaledAllBirdBitmaps[2][0] = BitmapFactory.decodeResource(getResources(), R.drawable.redbird_upflap, options);
-        unscaledAllBirdBitmaps[2][1] = BitmapFactory.decodeResource(getResources(), R.drawable.redbird_midflap, options);
-        unscaledAllBirdBitmaps[2][2] = BitmapFactory.decodeResource(getResources(), R.drawable.redbird_downflap, options);
-        unscaledTitle = extract(atlas, loc(0.6855469, ATLAS_WIDTH), loc(0.17773438, ATLAS_HEIGHT), 178, 48);
-        unscaledCopyright = extract(atlas, loc(0.86328125, ATLAS_WIDTH), loc(0.17773438, ATLAS_HEIGHT), 126, 14);
-        unscaledButtonScore = extract(atlas, loc(0.8027344, ATLAS_WIDTH), loc(0.22851562, ATLAS_HEIGHT), 116, 70);
-        unscaledTextReady = extract(atlas, loc(0.5703125, ATLAS_WIDTH), loc(0.11328125, ATLAS_HEIGHT), 196, 62);
-        unscaledTextGameOver = extract(atlas, loc(0.765625, ATLAS_WIDTH), loc(0.11328125, ATLAS_HEIGHT), 204, 54);
-        unscaledScorePanel = extract(atlas, loc(0.0, ATLAS_WIDTH), loc(0.50390625, ATLAS_HEIGHT), 238, 126);
-        unscaledButtonPlay = extract(atlas, loc(0.6855469, ATLAS_WIDTH), loc(0.22851562, ATLAS_HEIGHT), 116, 70);
+        Bitmap[] characters = preparedAssets.characters;
+        for (int color = 0; color < 3; color++) {
+            for (int frame = 0; frame < 3; frame++) unscaledAllBirdBitmaps[color][frame] = characters[color];
+        }
+        unscaledTitle = BrandArt.menuLogo(getResources());
+        unscaledButtonScore = WorldArt.button("NENCOINS", "RECORDE");
+        unscaledTextReady = WorldArt.message(false);
+        unscaledTextGameOver = WorldArt.message(true);
+        unscaledScorePanel = WorldArt.panel();
+        unscaledButtonPlay = WorldArt.button("NENGUE", "PLAY");
 
         int settingsResId = getResources().getIdentifier("settingsbutton", "drawable", getContext().getPackageName());
         if (settingsResId != 0) unscaledButtonSettings = BitmapFactory.decodeResource(getResources(), settingsResId, options);
         if (unscaledButtonSettings == null) Log.w("GameView", "Could not load 'settingsbutton.png'.");
         
-        unscaledMedalsBitmaps[0] = extract(atlas, loc(0.23632812, ATLAS_WIDTH), loc(0.50390625, ATLAS_HEIGHT), 48, 48);
-        unscaledMedalsBitmaps[1] = extract(atlas, loc(0.23632812, ATLAS_WIDTH), loc(0.55078125, ATLAS_HEIGHT), 48, 48);
-        unscaledMedalsBitmaps[2] = extract(atlas, loc(0.21875, ATLAS_WIDTH), loc(0.8847656, ATLAS_HEIGHT), 44, 48);
-        unscaledMedalsBitmaps[3] = extract(atlas, loc(0.21875, ATLAS_WIDTH), loc(0.9316406, ATLAS_HEIGHT), 44, 48);
-        
-        atlas.recycle();
+        for (int tier=0; tier<4; tier++) unscaledMedalsBitmaps[tier] = preparedAssets.medals[tier];
         for (int i = 0; i < 10; i++) {
             int resId = getResources().getIdentifier("number_" + i, "drawable", getContext().getPackageName());
             if (resId != 0) unscaledNumberBitmaps[i] = BitmapFactory.decodeResource(getResources(), resId, options);
@@ -1937,6 +2231,15 @@ class GameView extends View implements Choreographer.FrameCallback {
         Matrix flipMatrix = new Matrix();
         flipMatrix.setScale(1, -1);
         pipeDownBitmap = Bitmap.createBitmap(pipeUpBitmap, 0, 0, pipeUpBitmap.getWidth(), pipeUpBitmap.getHeight(), flipMatrix, true);
+        wallBottoms[0] = pipeUpBitmap;
+        wallTops[0] = pipeDownBitmap;
+        for (int style = 1; style < WorldArt.WALL_STYLES; style++) {
+            Bitmap nativeWall = preparedAssets.walls[style];
+            wallBottoms[style] = scaleBitmap(nativeWall);
+            wallTops[style] = Bitmap.createBitmap(wallBottoms[style], 0, 0,
+                    wallBottoms[style].getWidth(), wallBottoms[style].getHeight(), flipMatrix, false);
+        }
+
 
         for (int i = 0; i < 3; i++) for (int j = 0; j < 3; j++) scaledAllBirdBitmaps[i][j] = scaleBitmap(unscaledAllBirdBitmaps[i][j]);
         for (int i=0; i<4; i++) medalBitmaps[i] = scaleBitmap(unscaledMedalsBitmaps[i]);
@@ -1951,7 +2254,6 @@ class GameView extends View implements Choreographer.FrameCallback {
             }
         }
         titleBitmap = scaleBitmap(unscaledTitle);
-        copyrightBitmap = scaleBitmap(unscaledCopyright);
         scoreButtonBitmap = scaleBitmap(unscaledButtonScore); getReadyBitmap = scaleBitmap(unscaledTextReady);
         gameOverBitmap = scaleBitmap(unscaledTextGameOver); scorePanelBitmap = scaleBitmap(unscaledScorePanel);
         playButtonBitmap = scaleBitmap(unscaledButtonPlay);
@@ -1967,6 +2269,11 @@ class GameView extends View implements Choreographer.FrameCallback {
         soundWing = soundPool.load(getContext(), R.raw.wing, 1);
         soundPoint = soundPool.load(getContext(), R.raw.point, 1);
         soundHit = soundPool.load(getContext(), R.raw.hit, 1);
+        soundShot = soundPool.load(getContext(), R.raw.falling_burst, 1);
+        fallingGunfire = new FallingGunfire(soundPool, soundShot);
+        soundAura = soundPool.load(getContext(), R.raw.aura_loop, 1);
+        soundAuraActivate = soundPool.load(getContext(), R.raw.aura_activate, 1);
+        soundBazooka = soundPool.load(getContext(), R.raw.wall_shot, 1);
         soundDie = soundPool.load(getContext(), R.raw.die, 1);
         soundSwooshing = soundPool.load(getContext(), R.raw.swooshing, 1);
         soundThunder = soundPool.load(getContext(), R.raw.thunder, 1);
@@ -2022,18 +2329,26 @@ class GameView extends View implements Choreographer.FrameCallback {
     }
 
     private void playSound(final int soundID) {
-        if (!settingSoundEnabled) return;
+        if (!settingSoundEnabled || !isRunning) return;
         if (soundPool != null && soundID != 0 && soundExecutor != null && !soundExecutor.isShutdown()) {
-            soundExecutor.submit(() -> soundPool.play(soundID, 1, 1, 0, 0, 1));
+            final SoundPool activePool = soundPool;
+            soundExecutor.submit(() -> {
+                if (isRunning && activePool == soundPool) activePool.play(soundID, 1, 1, 0, 0, 1);
+            });
         }
     }
     public void pause() {
+        secretGestureTouch.cancel(); waitingTouch=false; isScreenPressed=false; pressedButtonRect=null;
+        stopAuraSound();
+        if (fallingGunfire != null) fallingGunfire.pause();
+        if (retroAudio != null) retroAudio.pause();
         isRunning = false;
         choreographer.removeFrameCallback(this);
         stopWeatherSounds();
     }
 
     public void resume() {
+        if (getContext() instanceof MainActivity && !((MainActivity)getContext()).isForeground()) return;
         if (!isRunning && isReady) {
             loadSettings();
             if (gameState == GameState.HOME || gameState == GameState.PANEL_SLIDING) {
@@ -2043,6 +2358,9 @@ class GameView extends View implements Choreographer.FrameCallback {
                 updateWeatherSounds();
             }
             isRunning = true;
+            syncAuraSound();
+            if (fallingGunfire != null) fallingGunfire.resume(settingSoundEnabled);
+            if (retroAudio != null) retroAudio.resume(prefs);
             lastFrameTimeNanos = 0;
             choreographer.postFrameCallback(this);
         }
@@ -2052,6 +2370,7 @@ class GameView extends View implements Choreographer.FrameCallback {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         pause();
+        if (retroAudio != null) { retroAudio.release(); retroAudio = null; }
         if (soundExecutor != null) { soundExecutor.shutdownNow(); soundExecutor = null;
         }
         if (soundPool != null) { soundPool.release(); soundPool = null;
@@ -2072,6 +2391,11 @@ class GameView extends View implements Choreographer.FrameCallback {
         }
         float deltaTime = (frameTimeNanos - lastFrameTimeNanos) / 1_000_000_000.0f;
         lastFrameTimeNanos = frameTimeNanos;
+        if (gameState == GameState.PLAYING) {
+            powerUps.tick(deltaTime);
+            skyTraffic.tick(deltaTime,settingReversePipesEnabled);
+        }
+        syncAuraSound();
         if (deltaTime > (1.0f / 30.0f)) deltaTime = (1.0f / 30.0f);
         update(deltaTime); invalidate(); choreographer.postFrameCallback(this);
     }
@@ -2520,9 +2844,11 @@ class GameView extends View implements Choreographer.FrameCallback {
 
 class Pipe {
     float x; int topPipeY; boolean isScored; int width, height;
+    final WallStatus status = new WallStatus();
     private static Random random = new Random();
     public Paint pipePaint;
     public boolean isGolden;
+    public int wallStyle;
 
     private Rect topHeadRect = new Rect(), topBodyRect = new Rect();
     private Rect bottomHeadRect = new Rect(), bottomBodyRect = new Rect();
@@ -2542,7 +2868,7 @@ class Pipe {
     public static void initHitboxDimensions(float scale) {
         final int UNSCALED_HEAD_WIDTH = 52;
         final int UNSCALED_HEAD_HEIGHT = 24;
-        final int UNSCALED_BODY_WIDTH = 48;
+        final int UNSCALED_BODY_WIDTH = 52;
 
         pipeHeadWidth = UNSCALED_HEAD_WIDTH * scale;
         pipeHeadHeight = UNSCALED_HEAD_HEIGHT * scale;
@@ -2551,6 +2877,8 @@ class Pipe {
     }
 
     public void resetHeight(int pipeGap, int playAreaHeight, int topOffset, float variationMultiplier) {
+        status.reset();
+        wallStyle = random.nextInt(WorldArt.WALL_STYLES);
         float baseMarginPercent = 0.08f;
         float effectiveVariation = Math.max(0.001f, variationMultiplier);
         float marginPercent = Math.max(0.0f, Math.min(0.49f, baseMarginPercent / effectiveVariation));

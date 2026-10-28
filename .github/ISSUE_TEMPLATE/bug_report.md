@@ -1,39 +1,28 @@
 ---
-name: Bug report
-about: Create a detailed report to help us improve
-title: ''
+name: Relatar um problema
+about: Ajude a melhorar o Corre Nengue
+title: '[Problema] '
 labels: ''
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## O que aconteceu?
 
-**Crash log**
-```
-If there was a crash log paste it here.
-```
+Descreva o problema e o que você esperava que acontecesse.
 
-**Flappy Version**
-Give the exact game version you were on (e.g. V1.5 beta 01).
+## Como reproduzir
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+1. Abra...
+2. Toque em...
+3. Observe...
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Ambiente
 
-**Screenshots and/or Videos**
-If applicable, add screenshots or other media to help explain your problem.
+- Versão do Corre Nengue:
+- Modelo do aparelho:
+- Versão do Android:
+- Configurações relevantes:
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. Google Pixel 9]
- - OS: [e.g. Android 16]
+## Imagens ou detalhes adicionais
 
-**Additional context**
-Add any other context about the problem here.
+Se ajudar, inclua uma captura de tela, vídeo ou trecho do erro.

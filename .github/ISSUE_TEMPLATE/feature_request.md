@@ -1,20 +1,19 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
+name: Sugerir uma melhoria
+about: Compartilhe uma ideia para o Corre Nengue
+title: '[Ideia] '
 labels: ''
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Sua ideia
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+O que você gostaria de ver no jogo ou no site?
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Como isso melhora a experiência?
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+Explique o objetivo ou a dificuldade que a proposta resolve.
+
+## Referências
+
+Se quiser, inclua exemplos, desenhos ou imagens que ajudem a explicar.

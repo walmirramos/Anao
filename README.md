@@ -1,89 +1,111 @@
-## Corre Nengue — site de apresentação
+<div align="center">
 
-Acesse o jogo em apresentação: **https://walmirramos.github.io/FlappyNengue/**
+<img src="docs/assets/corre-nengue.jpg" width="280" alt="Corre Nengue: o protagonista de óculos escuros, São Paulo em pixel art e uma viatura na rua.">
 
-Site publicado pelo GitHub Pages a partir de [docs](docs/README.md).
+# Corre Nengue.
 
----
+### A polícia vem aí.
 
-# Flappy Bird 64-bit
+São Paulo em pixels. Personalidade em cada partida.<br>
+Um toque para entrar no corre. Só mais uma vez para tentar superar seu recorde.
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/fd685be8-0166-4b06-a90b-afc2388b7258" alt="Flappy Bird Screenshot" width="295">
-</p>
+<br>
 
-### A Faithful Recreation for Modern Android Devices
+<a href="https://walmirramos.github.io/FlappyNengue/"><img src=".github/assets/site.svg" height="42" alt="Conhecer o site"></a>
+&nbsp;
+<a href="https://walmirramos.github.io/FlappyNengue/downloads/CorreNengue-1.10.1.apk"><img src=".github/assets/android.svg" height="42" alt="Baixar para Android"></a>
 
-This project is an open-source, 64-bit Android Java recreation of the original **Flappy Bird** game, designed to run seamlessly on modern Android devices. It strives to be a pixel-perfect and behaviorally accurate replica of the beloved and notoriously challenging game, offering an authentic experience for both nostalgic fans and new players alike.
+<br><br>
 
-The motivation behind this project is a deep appreciation for the original game and a desire to preserve it for future generations. This is a non-commercial, educational, and entertainment-driven initiative. Please don't steal the code, if you want to help, contribute to this project. Contributions will help keep this project alive! I strive (and hopefully with help from other people) to make this the absolute best Flappy Bird game for Android, keeping the original feel intact, while also incorporating enhancements.
+**Android 5.0+** &nbsp; · &nbsp; **Versão 1.10.1** &nbsp; · &nbsp; **Dubbox 2026**
 
-_Note: This recreation was based off of V1.3 of the original Flappy Bird._
+</div>
 
----
+<br>
 
-## ❗ General Disclaimer
+## A cidade não para.
 
-This app is completely safe and contains **no malicious code whatsoever**. The entire source code is available for inspection, ensuring full transparency. Although **VirusTotal** or similar scanners may occasionally flag indie projects with **false positives**, the most recent scan of this APK showed **zero detections** across all engines. Rest assured—this build is clean and secure. We encourage anyone with doubts to review the codebase or run their own scans to verify. _If there happens to be a virus/malicious content, I didn't put it in there lol._
+O Corre Nengue leva a correria para uma São Paulo em pixel art: prédios, paredes de
+tijolos, céu poluído e cenários que mudam conforme você avança. Nas fases mais
+adiante, o lixão pega fogo e a paisagem ganha ainda mais personalidade.
 
----
+Toque para ganhar impulso, atravesse as passagens e acumule **Nencoins**.
+Seu próximo objetivo é simples: passar do próprio recorde.
 
-## ❗ Legal Disclaimer
+## Dez segundos. Outra partida.
 
-This project is a **fan-made** recreation and is **not affiliated with**, **endorsed by**, or **connected to** the original creator of *Flappy Bird*, **Dong Nguyen**, or his studio, **.GEARS**.
+Colete os bônus no caminho e mude o ritmo da correria.
 
-All original assets—including the name *Flappy Bird*, character design, and sound effects—are the property of their respective owners.
+| Bônus | O que acontece | Duração |
+| :--- | :--- | :---: |
+| **Banana · Sayajin** | Aura dourada e proteção contra paredes. | 10 s |
+| **Celular** | Amplia o vão entre as paredes para dar mais espaço. | 10 s |
+| **Bazuca** | Dispara automaticamente, explode paredes e espalha tijolos. | 10 s |
 
-This recreation:
-- Is provided **free of charge**
-- Is **not intended for commercial use**
-- **Does not** generate any revenue
+A primeira banana aparece a partir de **20 Nencoins**. Depois entram os outros
+itens e novas aparições variam durante a partida. A pausa congela os efeitos.
+O chão continua sendo um obstáculo.
 
-It has been developed with great respect for the original work and its creator. The primary goal is to **preserve and celebrate** this classic title by making it playable on modern hardware.
+## Seu Nengue. Seu estilo.
 
-We believe this project qualifies as **fair use** under the category of a **non-commercial, transformative work of commentary and preservation**.  
-If you are a copyright holder and feel that this project infringes upon your rights, please reach out and we will take the necessary action.
+**Clássico, azul ou rosa.** Escolha uma paleta ou deixe o jogo sortear.
+Os menus estão em português, e as configurações permitem ajustar o ritmo,
+os cenários e os efeitos da partida.
 
----
+Música chiptune, sirene e efeitos em 8 bits completam a identidade do jogo.
+Música e sirene têm controles de volume separados.
 
-## 🌟 Features
+## Comece o corre.
 
-- **Authentic Gameplay**: Experience the original, unforgiving "tap-to-flap" mechanic that made the game a global hit.
-- **Pixel-Perfect Graphics**: Carefully recreated visuals that mirror the 8-bit aesthetic of the original.
-- **Accurate Physics**: Bird motion, gravity, and collision behavior match the original gameplay precisely.
-- **64-Bit Compatibility**: Optimized for modern Android hardware to ensure smooth, lag-free performance.
-- **Custom Settings**: Additional options added for enhanced personal customization, allowing players to tailor gameplay to their preferences.
-- **No Ads, No In-App Purchases**: A pure, distraction-free gaming experience.
-- **Open Source**: Full source code available to explore, modify, and contribute to.
+1. [Baixe o APK 1.10.1](https://walmirramos.github.io/FlappyNengue/downloads/CorreNengue-1.10.1.apk) no seu Android.
+2. Abra o arquivo e conclua a instalação. Se solicitado, permita a instalação pelo aplicativo que abriu o APK.
+3. Toque em **Nengue Play** e depois na tela para começar.
 
----
+O download tem aproximadamente **18,6 MB**. O arquivo de
+[verificação SHA-256](docs/downloads/CorreNengue-1.10.1.sha256) acompanha o APK.
 
-## 📲 Installation
+<details>
+<summary><strong>Uma dica para explorar as configurações.</strong></summary>
 
-To install the game on your Android device:
+Para ativar a invencibilidade, desenhe um **L** com um dedo: desça e depois siga
+para a direita, sem levantar o dedo entre as partes. Solte ao terminar.
 
-1. Enable **"Install from unknown sources"** in your device’s security settings.
-2. Download the latest `.apk` file from the Releases section of this GitHub repository (for the most up-to-date version), or from the **[Mediafire location](https://www.mediafire.com/folder/at8q4prpl59m6/Flappy+Bird+64-bit+Recreation)**, which also includes older versions + the latest release.
-3. Locate and open the downloaded `.apk` file, then follow the on-screen instructions to install the game.
-   
----
+Faça o gesto no centro da tela, longe das bordas de navegação do Android.
+Ele funciona no menu, nas Configurações e durante a partida. A confirmação
+**Invencibilidade ativada** aparece na tela. Repita o L para desativar.
 
-## 👨‍💻 How to Contribute
+</details>
 
-We welcome contributions to help improve this recreation and ensure its accuracy. To contribute:
+## Por dentro do projeto.
 
-1. Fork the repository.
-2. Create a new branch.
-3. Make your changes and commit them with clear, descriptive messages along with screenshots and video recordings.
-4. Push your changes to your fork.
-5. Open a pull request describing your updates.
-6. Explain how to push the changes to `main` properly as the developer isn't familiar with GitHub yet!
+```text
+app/         Aplicativo Android e recursos do jogo
+docs/        Site oficial, artes de apresentação e download
+guides/      Compilação, controles e identidade visual
+scripts/     Verificações da lógica do jogo
+legal/       Termos e avisos dos componentes
+```
 
----
+Com o **JDK 21** e o **Android SDK 35** configurados:
 
-## 🙏 Credits & Acknowledgements
+```powershell
+.\gradlew.bat :app:assembleDebug
+```
 
-- **Dong Nguyen (.GEARS)** – for creating the original Flappy Bird and inspiring this project.
-- **Android Studio, Sketchware Pro, Google** – for providing the tools, libraries, and documentation that made this possible.
+O APK é gerado em `app/build/outputs/apk/debug/app-debug.apk`.
 
----
+[Guia Android](guides/ANDROID.md) &nbsp; · &nbsp;
+[Identidade visual](guides/ART.md) &nbsp; · &nbsp;
+[Notas de versão](CHANGELOG.md) &nbsp; · &nbsp;
+[Como contribuir](CONTRIBUTING.md) &nbsp; · &nbsp;
+[Site e hospedagem](docs/README.md) &nbsp; · &nbsp;
+[Termos](LICENSE.md)
+
+<br>
+
+<div align="center">
+
+**Dubbox 2026.**<br>
+São Paulo em pixels. O corre é seu.
+
+</div>

@@ -1,0 +1,9 @@
+Jersey 10 / Corre Nengue pixel display font
+Original unmodified TTF from official Google Fonts repository.
+Designer: Sarah Cadigan-Fried.
+Copyright 2023 The Soft Type Project Authors.
+Source: https://github.com/google/fonts/tree/main/ofl/jersey10
+File: https://raw.githubusercontent.com/google/fonts/main/ofl/jersey10/Jersey10-Regular.ttf
+License: SIL Open Font License 1.1; see corre_pixel_ofl.txt.
+Android resource: @font/corre_pixel
+SHA-256: db9cbd091617048a145d249daa2b815fe7083be6ab66ac26626e21a4e01c3e82

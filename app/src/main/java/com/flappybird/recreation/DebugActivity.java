@@ -15,11 +15,11 @@ import java.util.Map;
 public class DebugActivity extends Activity {
 
     private static final Map<String, String> exceptionMap = new HashMap<String, String>() {{
-        put("StringIndexOutOfBoundsException", "Invalid string operation\n");
-        put("IndexOutOfBoundsException", "Invalid list operation\n");
-        put("ArithmeticException", "Invalid arithmetical operation\n");
-        put("NumberFormatException", "Invalid toNumber block operation\n");
-        put("ActivityNotFoundException", "Invalid intent operation\n");
+        put("StringIndexOutOfBoundsException", "Operação de texto inválida\n");
+        put("IndexOutOfBoundsException", "Operação de lista inválida\n");
+        put("ArithmeticException", "Operação aritmética inválida\n");
+        put("NumberFormatException", "Conversão numérica inválida\n");
+        put("ActivityNotFoundException", "Não foi possível abrir a tela\n");
     }};
 
     @Override
@@ -49,10 +49,10 @@ public class DebugActivity extends Activity {
                 formattedMessage.append("\n");
             }
         } else {
-            formattedMessage.append("No error message available.");
+            formattedMessage.append("Nenhuma mensagem de erro disponível.");
         }
 
-        setTitle(getTitle() + " Crashed");
+        setTitle(getTitle() + " — ocorreu um erro");
 
         TextView errorView = new TextView(this);
         errorView.setText(formattedMessage);

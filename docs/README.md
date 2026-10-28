@@ -54,5 +54,6 @@ mesmos APKs entregues com o projeto; não são links para uma loja de aplicativo
 - `styles.css`: layout, animações e media queries.
 - `site.js`: demonstrações em Canvas, cores, abas e áudio.
 - `assets/`: personagem, cidade, fonte, favicon e sons.
+- `assets/corre-nengue.jpg`: capa enviada pelo usuário, usada no README e no compartilhamento.
 - `downloads/`: APK 1.10.1 e seu hash.
-- `LICENSE.md`: licença copiada do projeto de origem.
+- `LICENSE.md` e `legal/`: índice e termos dos componentes.
