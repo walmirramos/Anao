@@ -1,3 +1,11 @@
+## Corre Nengue — site de apresentação
+
+Acesse o jogo em apresentação: **https://walmirramos.github.io/FlappyNengue/**
+
+Site publicado pelo GitHub Pages a partir de [docs](docs/README.md).
+
+---
+
 # Flappy Bird 64-bit
 
 <p align="center">
