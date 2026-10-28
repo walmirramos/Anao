@@ -11,9 +11,9 @@ Um toque para entrar no corre. Só mais uma vez para tentar superar seu recorde.
 
 <br>
 
-<a href="https://walmirramos.github.io/FlappyNengue/"><img src=".github/assets/site.svg" height="42" alt="Conhecer o site"></a>
+<a href="https://walmirramos.github.io/CorreNengue/"><img src=".github/assets/site.svg" height="42" alt="Conhecer o site"></a>
 &nbsp;
-<a href="https://walmirramos.github.io/FlappyNengue/downloads/CorreNengue-1.10.1.apk"><img src=".github/assets/android.svg" height="42" alt="Baixar para Android"></a>
+<a href="https://walmirramos.github.io/CorreNengue/downloads/CorreNengue-1.10.1.apk"><img src=".github/assets/android.svg" height="42" alt="Baixar para Android"></a>
 
 <br><br>
 
@@ -57,7 +57,7 @@ Música e sirene têm controles de volume separados.
 
 ## Comece o corre.
 
-1. [Baixe o APK 1.10.1](https://walmirramos.github.io/FlappyNengue/downloads/CorreNengue-1.10.1.apk) no seu Android.
+1. [Baixe o APK 1.10.1](https://walmirramos.github.io/CorreNengue/downloads/CorreNengue-1.10.1.apk) no seu Android.
 2. Abra o arquivo e conclua a instalação. Se solicitado, permita a instalação pelo aplicativo que abriu o APK.
 3. Toque em **Nengue Play** e depois na tela para começar.
 

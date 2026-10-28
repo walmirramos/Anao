@@ -1,6 +1,6 @@
 # Site de apresentação — Corre Nengue
 
-**Endereço GitHub Pages:** https://walmirramos.github.io/FlappyNengue/
+**Endereço GitHub Pages:** https://walmirramos.github.io/CorreNengue/
 
 Landing page em português, com direção visual inspirada em anúncios de produtos:
 tipografia ampla, espaço em branco, aparelho ilustrativo e seções de apresentação.
@@ -39,7 +39,7 @@ com a publicação de um repositório em subdiretório no GitHub Pages. Há um
 qualquer servidor de arquivos estáticos. Não exige conta de visitante ou backend.
 
 O site é publicado pelo GitHub Pages a partir da pasta `docs` da branch `main`
-do repositório `walmirramos/FlappyNengue`. Não é preciso baixar os arquivos
+do repositório `walmirramos/CorreNengue`. Não é preciso baixar os arquivos
 para visitar a página. Alterações nessa pasta são publicadas pelo GitHub.
 
 ## Atualizar o APK
