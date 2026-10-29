@@ -10,6 +10,11 @@ import java.util.EnumSet;
 class PowerUpStateTest {
  static int checks;
  static void check(boolean b,String name){checks++;if(!b)throw new AssertionError(name);}
+ static void expire(PowerUpState p){
+  if(p.active(PowerUpState.Kind.BAZUCA)){
+   while(p.rounds()>0){check(p.fireShot(),"round available");p.resolveShot();}
+  } else p.tick(10);
+ }
  public static void main(String[] args){
   PowerUpState p=new PowerUpState(new Random(42));
   check(!p.visible()&&!p.active()&&p.activeKind()==null&&p.collectibleKind()==null,"initial state");
@@ -31,7 +36,15 @@ class PowerUpStateTest {
   check(!p.shouldSpawn(46)&&p.shouldSpawn(47),"miss waits until next threshold");
   p.spawned(47,10);check(p.collectibleKind()==PowerUpState.Kind.BAZUCA,"third appearance is bazooka after missed phone");
   p.collect();check(p.active(PowerUpState.Kind.BAZUCA),"bazooka effect is typed");
-  p.tick(15);check(!p.active()&&p.remaining()==0&&p.activeKind()==null,"oversized tick clamps to zero");
+  check(p.rounds()==3&&p.remaining()==0,"bazooka gives three rounds without timer");
+  p.tick(9999);check(p.active()&&p.rounds()==3,"ammo never expires");
+  for(int i=3;i>0;i--){
+   check(p.fireShot()&&p.rounds()==i-1,"launch consumes exactly one round");
+   check(!p.fireShot(),"no second launch while rocket is in flight");
+   p.tick(9999);check(p.active(),"last rocket remains active until impact");
+   p.resolveShot();
+  }
+  check(!p.active()&&!p.fireShot()&&p.rounds()==0,"cannot fire fourth shot");
   PowerUpState.Kind previous=PowerUpState.Kind.BAZUCA;
   EnumSet<PowerUpState.Kind> seen=EnumSet.noneOf(PowerUpState.Kind.class);
   int score=57;
@@ -40,7 +53,7 @@ class PowerUpStateTest {
    p.spawned(score,10);PowerUpState.Kind next=p.collectibleKind();
    check(next!=null&&next!=previous,"random appearances never repeat immediately");
    seen.add(next);p.collect();check(p.active(next),"random kind preserved through collection");
-   p.tick(10);previous=next;score+=10;
+   expire(p);previous=next;score+=10;
   }
   check(seen.size()==3,"random phase can contain all kinds");
   p.reset();check(p.shouldSpawn(3)&&!p.shouldSpawn(2),"reset restores first threshold");

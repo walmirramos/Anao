@@ -8,14 +8,25 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-/** The same pixel portrait appears inside each of the four award tiers. */
+/** The same native pixel gesture appears inside each of the four award tiers. */
 final class MedalArt {
     private MedalArt() {}
 
+    private static Bitmap gesture() {
+        Bitmap b=Bitmap.createBitmap(20,32,Bitmap.Config.ARGB_8888);Canvas c=new Canvas(b);Paint p=new Paint();
+        p.setColor(0xff573c34);c.drawRect(8,0,13,18,p);c.drawRect(3,12,17,27,p);
+        c.drawRect(0,16,6,24,p);c.drawRect(6,25,15,32,p);
+        p.setColor(0xffe7ad84);c.drawRect(9,1,12,20,p);c.drawRect(4,13,16,26,p);
+        c.drawRect(1,17,5,23,p);c.drawRect(7,25,14,31,p);
+        p.setColor(0xffffd6b0);c.drawRect(9,2,10,15,p);c.drawRect(4,14,6,19,p);
+        c.drawRect(13,14,15,18,p);c.drawRect(7,27,9,31,p);
+        p.setColor(0xffb77557);c.drawRect(7,13,8,21,p);c.drawRect(12,13,13,21,p);
+        c.drawRect(4,20,15,22,p);c.drawRect(5,23,14,24,p);
+        p.setColor(0xfff9dec6);c.drawRect(9,2,12,5,p);return b;
+    }
+
     static Bitmap[] load(Resources resources) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;
-        Bitmap portrait = BitmapFactory.decodeResource(resources, R.drawable.nengue_character, options);
+        Bitmap portrait=gesture();
         int left=portrait.getWidth(), top=portrait.getHeight(), right=-1, bottom=-1;
         int[] row = new int[portrait.getWidth()];
         for (int y=0; y<portrait.getHeight(); y++) {

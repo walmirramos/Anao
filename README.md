@@ -7,7 +7,7 @@
 
 Um arcade Android em pixel art dentro de uma fábrica de automóveis.
 
-[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.2.apk)
+[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.3.apk)
 
 Android 5.0+ · Português · Dubbox 2026
 </div>
@@ -24,7 +24,7 @@ Trilha chiptune industrial original, motores, transportadores, sinais eletrônic
 
 ## Como jogar
 
-Toque na tela para impulsionar o personagem. Evite os obstáculos e o chão. Os bônus de pneu, parafusadeira e bazuca continuam disponíveis, com efeitos de dez segundos. Nas configurações, personalize a experiência e as cores do personagem.
+Toque na tela para impulsionar o personagem. Evite os obstáculos e o chão. Pneu e parafusadeira duram dez segundos. A bazuca oferece três tiros automáticos, sem prazo para expirar. Nas configurações, personalize a experiência e as cores do personagem.
 
 ## Instalação
 
@@ -46,17 +46,14 @@ Projeto Android Java. JDK 17 ou 21, Android SDK 35.
 
 ![Montadora em pixel art 16 bits](docs/assets/factory-16bit.png)
 
-## Novidades da versão 1.1
+## A experiência
 
-- Fundo detalhado no estilo 16 bits, com carros e robôs de montagem.
-- Bônus a partir de 3 coins: pneu protetor, parafusadeira para ampliar o vão e bazuca com explosão, fumaça e destroços. Efeitos de 10 segundos.
-- Splash de moedas a cada obstáculo ultrapassado.
-- A partir de 20 coins, carteira de trabalho coletável: +10 coins e coroa pelo restante da partida.
-- Logo ilustrada somente na abertura e no carregamento inicial. Menu sem efeitos de bônus.
-- Novos sons de motores, ferramentas e ar comprimido; queda com um fail cômico original.
+- Protagonista original e carros detalhados em pixel art 16 bits.
+- Pneu protetor e parafusadeira por dez segundos; bazuca com três disparos sem cronômetro.
+- Splash de moedas ao pontuar, com textos de bônus e ganhos no topo.
+- Aos 20 coins, carteira de trabalho: +10 coins e coroa pelo restante da partida.
+- Aos 30, o corpo dos canos se move por dentro de bordas e abertura fixas.
+- Aos 40, iluminação macabra e trilha original de terror.
+- Medalhas com gesto irreverente em pixel art. Abertura e loading exibem apenas logo e textos.
 
-## Versão 1.2
-
-Protagonista original fornecido, sem regeneração. Abertura e loading limpos, somente logo e textos. Carros móveis com sprite detalhado no estilo 16 bits e acabamentos dos obstáculos corrigidos.
-
-Aos 30 coins, os obstáculos oscilam suavemente, mantendo o vão e parando durante a travessia. Aos 40, começa o turno macabro com iluminação sombria e uma ambientação sonora original provisória. O áudio exato do meme depende da identificação da referência.
+Detalhes de cada versão no [histórico](CHANGELOG.md).

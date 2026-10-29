@@ -1,5 +1,10 @@
 # Histórico
 
+## 1.3 — Três tiros
+
+HUD de bônus e ganhos no topo. Bazuca com três disparos, sem tempo de expiração, incluindo conclusão do último projétil. Medalhas com gesto pixelado. Movimento decorativo dos canos preserva a posição e largura da abertura. Trilha de terror original adotada para o nível 40.
+
+
 ## 1.2 — Turno macabro
 
 PNG original do protagonista preservado byte a byte. Abertura sem cabeça separada. Sprites móveis de carros em 16 bits, texturas de obstáculos corrigidas, movimento seguro aos 30 coins e cenário sombrio aos 40. Ambientação sonora original provisória; meme específico aguardando referência.

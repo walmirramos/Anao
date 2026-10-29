@@ -3,7 +3,7 @@ package com.flappybird.recreation;
 import java.util.Random;
 
 /**
- * Gameplay state advanced only by foreground gameplay time.
+ * Timed factory powers use foreground time; bazooka uses three rounds with no expiry.
  * The first three appearances are SAYAJIN, CELULAR, BAZUCA, including missed items.
  * collectibleKind() is non-null only while an item is visible; activeKind() only
  * while its collected effect is active. Factory bonuses unlock at 3; callers choose later gaps (4-7).
@@ -17,6 +17,8 @@ final class PowerUpState {
     private int appearances;
     private Kind collectible, active, previousAppearance;
     private float remaining;
+    private int rounds;
+    private boolean shotInFlight;
 
     PowerUpState() { this(new Random()); }
     PowerUpState(Random random) {
@@ -48,25 +50,35 @@ final class PowerUpState {
         if(!visible() || active()) return false;
         active=collectible;
         collectible=null;
-        remaining=10f;
+        rounds=active==Kind.BAZUCA?3:0;shotInFlight=false;
+        remaining=active==Kind.BAZUCA?0:10f;
         return true;
     }
 
     void miss() { collectible=null; }
 
     void tick(float seconds) {
-        if(seconds>0) remaining=Math.max(0,remaining-seconds);
+        if(active==Kind.BAZUCA)return;
+        if(seconds>0 && Float.isFinite(seconds)) remaining=Math.max(0,remaining-seconds);
         if(remaining==0) active=null;
     }
 
-    boolean active() { return remaining>0 && active!=null; }
+    boolean active() { return active!=null && (active==Kind.BAZUCA ? rounds>0 || shotInFlight : remaining>0); }
     boolean active(Kind kind) { return active() && active==kind; }
     boolean visible() { return collectible!=null; }
     float remaining() { return remaining; }
     Kind collectibleKind() { return collectible; }
     Kind activeKind() { return active() ? active : null; }
 
-    void end() { remaining=0;active=null;collectible=null; }
+    int rounds() {return rounds;}
+    boolean fireShot() {
+        if(active!=Kind.BAZUCA || rounds<=0 || shotInFlight)return false;
+        rounds--;shotInFlight=true;return true;
+    }
+    void resolveShot() {
+        shotInFlight=false;if(active==Kind.BAZUCA && rounds==0)active=null;
+    }
+    void end() { remaining=0;rounds=0;shotInFlight=false;active=null;collectible=null; }
 
     void reset() {
         end();nextScore=3;appearances=0;previousAppearance=null;

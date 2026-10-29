@@ -44,3 +44,11 @@ Prompt de refinamento usado no arquivo final: Edit this exact sprite: REMOVE ALL
 `SafePipeMotion.java`: movimento a partir de 30, amplitude máxima de 14 pixels nativos, velocidade limitada a 12 pixels nativos por segundo e congelamento próximo do jogador. Desenho e colisão usam o mesmo deslocamento. Nenhuma redução do vão; limites superiores e inferiores respeitados.
 
 Aos 40, o fundo recebe tons frios, névoa e iluminação de emergência lenta. Jogador e obstáculos permanecem claros. `night_shift.wav` é ambientação original provisória, não o meme solicitado; aguarda referência exata. A faixa respeita pausa, volume, preferência de música e foco de áudio, e a partida seguinte restaura a trilha normal.
+
+## Versão 1.3
+
+Bazuca usa estoque de três disparos, consumidos no lançamento. O último projétil resolve o impacto antes de encerrar o poder; não há cronômetro. Pneu e parafusadeira continuam com dez segundos. Não há tiros gratuitos no mecanismo de proteção de proximidade.
+
+`Pipe.getCurrentTopPipeY()` ignora o deslocamento decorativo. A renderização recorta a textura animada dentro da silhueta estática e mantém a borda fixa; desenho e colisão compartilham a mesma abertura. O teste de geometria valida 1100 quadros e a interação com o vão ampliado da parafusadeira.
+
+Medalhas usam gesto desenhado com pixels nativos no Canvas, sem depender de fonte emoji. Textos de bônus e ganho de coins ficam no topo. A ambientação original de `night_shift.wav` é agora a trilha definitiva do turno macabro, conforme a preferência por qualquer som assustador.

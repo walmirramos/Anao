@@ -26,9 +26,12 @@ final class FactoryCelebration {
             c.drawRect(x[i]-2*s,y[i]-3*s,x[i]+2*s,y[i]+3*s,p);
             p.setColor(0xffffefa5);c.drawRect(x[i]-s,y[i]-2*s,x[i],y[i]+s,p);
         }
+        p.setAlpha(255);
+    }
+    void drawLabel(Canvas c,float s,float x,float y) {
         if(labelLife>0){p.setTypeface(PixelFont.current());p.setTextAlign(Paint.Align.CENTER);p.setTextSize(12*s);
-            p.setColor(0xff12232e);c.drawText(label,labelX+s,labelY+s,p);
-            p.setColor(0xffffdf6b);c.drawText(label,labelX,labelY,p);}
+            p.setColor(0xff12232e);c.drawText(label,x+s,y+s,p);
+            p.setColor(0xffffdf6b);c.drawText(label,x,y,p);}
         p.setAlpha(255);
     }
 }

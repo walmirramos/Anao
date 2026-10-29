@@ -229,6 +229,21 @@ class GameView extends View implements Choreographer.FrameCallback {
         }
     }
 
+    private void drawMovingWall(Canvas canvas,Bitmap texture,Pipe pipe,boolean upper) {
+        int saved=canvas.save();canvas.clipRect(pipeDestRect);
+        float dy=score>=30?pipe.textureOffset():0;
+        canvas.translate(0,dy);
+        canvas.drawBitmap(texture,null,pipeDestRect,pipe.pipePaint);
+        canvas.translate(0,dy>0?-pipe.height:pipe.height);
+        canvas.drawBitmap(texture,null,pipeDestRect,pipe.pipePaint);
+        canvas.restoreToCount(saved);
+        // Fixed steel rim makes the passage boundary explicit and stationary.
+        float edge=upper?pipeDestRect.bottom:pipeDestRect.top;
+        float thickness=3*scale;
+        pixelPaint.setColor(0xffafc5cc);
+        canvas.drawRect(pipeDestRect.left,upper?edge-thickness:edge,pipeDestRect.right,upper?edge:edge+thickness,pixelPaint);
+        pixelPaint.setColor(Color.WHITE);
+    }
     private float topWallY(Pipe pipe) { return pipe.status.top(pipe.getTopPipeY()); }
     private float bottomWallY(Pipe pipe) { return pipe.status.bottom(pipe.getBottomPipeY(pipeGap)); }
 
@@ -295,16 +310,11 @@ class GameView extends View implements Choreographer.FrameCallback {
         }
         float direction=settingReversePipesEnabled ? -1 : 1;
         rocketCooldown=Math.max(0,rocketCooldown-seconds);
-        // Use the real hitbox so enlarged custom characters also get timely wall blasts.
-        for(Pipe pipe:pipes) {
-            float width=pipe.width*settingPipeWidth;
-            float left=pipe.x-(width-pipe.width)/2f;
-            if(!pipe.status.isDestroyed() && BazookaTargeting.imminent(birdRect.left,birdRect.right,
-                    left,left+width,settingReversePipesEnabled,8*scale)) destroyWall(pipe);
-        }
         if(rocketTarget!=null && (rocketTarget.status.isDestroyed() ||
-                rocketTarget.status.generation()!=rocketGeneration)) rocketTarget=null;
-        if(rocketTarget==null && rocketCooldown<=0) {
+                rocketTarget.status.generation()!=rocketGeneration)) {
+            rocketTarget=null;powerUps.resolveShot();
+        }
+        if(rocketTarget==null && rocketCooldown<=0 && powerUps.rounds()>0) {
             float nearest=Float.MAX_VALUE;
             for(Pipe pipe:pipes) {
                 float width=pipe.width*settingPipeWidth;
@@ -316,7 +326,7 @@ class GameView extends View implements Choreographer.FrameCallback {
                     rocketTarget=pipe; nearest=distance;
                 }
             }
-            if(rocketTarget!=null) {
+            if(rocketTarget!=null && powerUps.fireShot()) {
                 rocketGeneration=rocketTarget.status.generation();
                 rocketX=birdX+direction*25*scale*settingBirdSize;
                 rocketY=birdY+11*scale*settingBirdSize;
@@ -331,8 +341,11 @@ class GameView extends View implements Choreographer.FrameCallback {
         float dx=tx-rocketX,dy=ty-rocketY;
         float distance=(float)Math.sqrt(dx*dx+dy*dy);
         float step=(Math.abs(PIPE_SPEED_PER_SEC)+480*scale)*seconds;
-        if(distance<=step+4*scale) {
-            destroyWall(rocketTarget); rocketTarget=null;
+        float visualWidth=rocketTarget.width*settingPipeWidth;
+        float wallLeft=rocketTarget.x-(visualWidth-rocketTarget.width)/2f;
+        boolean close=BazookaTargeting.imminent(birdRect.left,birdRect.right,wallLeft,wallLeft+visualWidth,settingReversePipesEnabled,8*scale);
+        if(distance<=step+4*scale || close) {
+            destroyWall(rocketTarget); rocketTarget=null;powerUps.resolveShot();
         } else {
             rocketX+=dx/distance*step; rocketY+=dy/distance*step;
         }
@@ -1631,14 +1644,14 @@ class GameView extends View implements Choreographer.FrameCallback {
                 float xPos = pipe.x - (visualPipeWidth - pipe.width) / 2f;
 
                 pipeDestRect.set(xPos, topWallY(pipe), xPos + visualPipeWidth, topWallY(pipe) + pipe.height);
-                canvas.drawBitmap(wallTops[pipe.wallStyle], null, pipeDestRect, pipe.pipePaint);
+                drawMovingWall(canvas,wallTops[pipe.wallStyle],pipe,true);
                 
                 if (pipeElectrificationTimer > 0) {
                      drawPipeElectricity(canvas, xPos, topWallY(pipe), visualPipeWidth, pipe.height);
                 }
 
                 pipeDestRect.set(xPos, bottomWallY(pipe), xPos + visualPipeWidth, bottomWallY(pipe) + pipe.height);
-                canvas.drawBitmap(wallBottoms[pipe.wallStyle], null, pipeDestRect, pipe.pipePaint);
+                drawMovingWall(canvas,wallBottoms[pipe.wallStyle],pipe,false);
 
                 if (pipeElectrificationTimer > 0) {
                      drawPipeElectricity(canvas, xPos, bottomWallY(pipe), visualPipeWidth, pipe.height);
@@ -1751,21 +1764,26 @@ class GameView extends View implements Choreographer.FrameCallback {
         } else if (gameState == GameState.WAITING) {
             drawCenteredBitmap(canvas, getReadyBitmap, -(int) (getPlayableHeight() * 0.15));
         } else if (gameState == GameState.PLAYING) {
-            WorldArt.coinLabel(canvas, screenWidth / 2f, systemBarTop + getPlayableHeight() * 0.15f - 25 * scale, scale);
-            drawScoreWithImages(canvas, score, screenWidth / 2, systemBarTop + (int) (getPlayableHeight() * 0.15));
+            WorldArt.coinLabel(canvas, screenWidth / 2f, systemBarTop + 30 * scale, scale);
+            drawScoreWithImages(canvas, score, screenWidth / 2, systemBarTop + (int)(49*scale));
+            celebrations.drawLabel(canvas,scale,screenWidth-45*scale,systemBarTop+49*scale);
             if (powerUps.active()) {
                 Paint bonusLabel = WorldArt.textPaint(11 * scale);
                 bonusLabel.setColor(powerUps.active(PowerUpState.Kind.CELULAR) ? 0xff8be6ff : 0xffffdb4f);
                 String name=powerUps.active(PowerUpState.Kind.CELULAR) ? "PARAFUSADEIRA / VÃO MAIOR" :
                         powerUps.active(PowerUpState.Kind.BAZUCA) ? "BAZUCA" : "PNEU / PROTEÇÃO";
-                canvas.drawText(name + " / " + (int)Math.ceil(powerUps.remaining()) + "s",
-                        screenWidth / 2f, systemBarTop + getPlayableHeight() * .15f + 45 * scale, bonusLabel);
+                String status=powerUps.active(PowerUpState.Kind.BAZUCA)
+                        ? "BAZUCA / "+powerUps.rounds()+" TIROS"+(powerUps.rounds()==0?" / EM VOO":"")
+                        : name+" / "+(int)Math.ceil(powerUps.remaining())+"s";
+                float maxWidth=screenWidth-24*scale;
+                if(bonusLabel.measureText(status)>maxWidth)bonusLabel.setTextSize(bonusLabel.getTextSize()*maxWidth/bonusLabel.measureText(status));
+                canvas.drawText(status,screenWidth/2f,systemBarTop+15*scale,bonusLabel);
             }
             if (score >= 20) {
                 Paint stageLabel = WorldArt.textPaint(8 * scale);
                 stageLabel.setColor(Color.rgb(255,226,154));
                 canvas.drawText(score >= 40 ? "TURNO MACABRO" : "MONTAGEM / TURNO 2",
-                        screenWidth / 2f, systemBarTop + getPlayableHeight() * .15f + 28 * scale, stageLabel);
+                        screenWidth / 2f, systemBarTop + 78 * scale, stageLabel);
             }
         } else if (gameState == GameState.PANEL_SLIDING || gameState == GameState.GAME_OVER) {
             if (darkenPaint.getAlpha() > 0) {
@@ -2962,8 +2980,9 @@ class Pipe {
     public boolean isAtRest() { return currentYOffset == 0;
     }
 
-    private float getCurrentTopPipeY() { return topPipeY + currentYOffset;
+    private float getCurrentTopPipeY() { return topPipeY;
     }
+    float textureOffset() {return currentYOffset;}
     public float getTopPipeY() { return getCurrentTopPipeY() - this.height;
     }
     public float getBottomPipeY(int pipeGap) { return getCurrentTopPipeY() + pipeGap;
