@@ -4,18 +4,18 @@ plugins {
 
 android {
 	compileSdk 35
-	
+
 	useLibrary 'org.apache.http.legacy'
-	
+
 	defaultConfig {
-		applicationId "com.walmirramos.flappynengue"
+		applicationId "com.walmirramos.anaodefirma"
 		namespace "com.flappybird.recreation"
 		minSdkVersion 21
 		targetSdkVersion 35
-		versionCode 27
-		versionName "1.10.1-corre-nengue"
+		versionCode 1
+		versionName "1.0-anao-de-firma"
 	}
-	
+
 	buildTypes {
 		release {
 			minifyEnabled false

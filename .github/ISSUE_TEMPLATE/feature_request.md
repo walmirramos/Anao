@@ -1,6 +1,6 @@
 ---
 name: Sugerir uma melhoria
-about: Compartilhe uma ideia para o Corre Nengue
+about: Compartilhe uma ideia para o Anão de Firma
 title: '[Ideia] '
 labels: ''
 assignees: ''

@@ -15,7 +15,7 @@ final class MedalArt {
     static Bitmap[] load(Resources resources) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
-        Bitmap portrait = BitmapFactory.decodeResource(resources, R.drawable.trump_medal_face, options);
+        Bitmap portrait = BitmapFactory.decodeResource(resources, R.drawable.nengue_character, options);
         int left=portrait.getWidth(), top=portrait.getHeight(), right=-1, bottom=-1;
         int[] row = new int[portrait.getWidth()];
         for (int y=0; y<portrait.getHeight(); y++) {

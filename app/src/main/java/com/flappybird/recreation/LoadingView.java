@@ -16,7 +16,7 @@ final class LoadingView extends View {
         BrandArt.load(getResources());
         character=CharacterSprites.load(getResources());
         pixels.setFilterBitmap(false);
-        setContentDescription("Corre Nengue. A polícia vem aí. Carregando o jogo.");
+        setContentDescription("Anão de Firma. Linha de montagem. Carregando o jogo.");
     }
     void showError() {
         failed=true;

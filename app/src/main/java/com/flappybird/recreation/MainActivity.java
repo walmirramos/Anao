@@ -1576,7 +1576,7 @@ class GameView extends View implements Choreographer.FrameCallback {
 
         canvas.save();
         canvas.scale(screenWidth/288f,screenHeight/512f);
-        skyTraffic.draw(canvas,pixelPaint);
+        // Indoor factory: no aircraft overlay.
         canvas.restore();
 
         if (settingWeatherEffect > 0) {
@@ -1851,8 +1851,8 @@ class GameView extends View implements Choreographer.FrameCallback {
                             gameState = GameState.TRANSITION_TO_WAITING; isFadingOut = true; playSound(soundSwooshing);
                         } else if (pressedButtonRect == scoreButtonRect) {
                             new MaterialAlertDialogBuilder(getContext())
-                                .setTitle("Nencoins")
-                                .setMessage("Seu recorde: " + highScore + " Nencoins")
+                                .setTitle("Peças")
+                                .setMessage("Seu recorde: " + highScore + " Peças")
                                 .setPositiveButton("Voltar", null).show();
                         } else if (pressedButtonRect == settingsButtonRect) {
                             playSound(soundSwooshing);
@@ -2196,11 +2196,11 @@ class GameView extends View implements Choreographer.FrameCallback {
             for (int frame = 0; frame < 3; frame++) unscaledAllBirdBitmaps[color][frame] = characters[color];
         }
         unscaledTitle = BrandArt.menuLogo(getResources());
-        unscaledButtonScore = WorldArt.button("NENCOINS", "RECORDE");
+        unscaledButtonScore = WorldArt.button("PEÇAS", "RECORDE");
         unscaledTextReady = WorldArt.message(false);
         unscaledTextGameOver = WorldArt.message(true);
         unscaledScorePanel = WorldArt.panel();
-        unscaledButtonPlay = WorldArt.button("NENGUE", "PLAY");
+        unscaledButtonPlay = WorldArt.button("FIRMA", "PLAY");
 
         int settingsResId = getResources().getIdentifier("settingsbutton", "drawable", getContext().getPackageName());
         if (settingsResId != 0) unscaledButtonSettings = BitmapFactory.decodeResource(getResources(), settingsResId, options);

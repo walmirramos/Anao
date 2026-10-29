@@ -1,4 +1,4 @@
-# Contribuir com o Corre Nengue
+# Contribuir com o Anão de Firma
 
 Ideias, correções e melhorias são bem-vindas. Abra uma issue para explicar o
 problema ou a proposta antes de iniciar uma mudança grande.
@@ -6,7 +6,7 @@ problema ou a proposta antes de iniciar uma mudança grande.
 ## Preparar a contribuição
 
 1. Crie uma branch para a alteração.
-2. Mantenha a identidade visual, o português e os nomes Corre Nengue, Nengue Play e Nencoins.
+2. Mantenha a identidade visual, o português e os nomes Anão de Firma, Nengue Play e Nencoins.
 3. Faça mudanças focadas e descreva o comportamento esperado.
 4. Compile o Android quando alterar o aplicativo e rode as verificações relacionadas.
 5. Abra um pull request com o que mudou e como foi verificado.

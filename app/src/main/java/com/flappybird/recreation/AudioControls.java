@@ -16,8 +16,8 @@ final class AudioControls {
     AudioControls(Activity activity, LinearLayout parent, Runnable changed) {
         music = toggle(activity, parent, "Música de fundo 8-bit");
         musicVolume = volume(activity, parent, "Volume da música", changed);
-        siren = toggle(activity, parent, "Sirene de polícia 8-bit");
-        sirenVolume = volume(activity, parent, "Volume da sirene", changed);
+        siren = toggle(activity, parent, "Máquinas da fábrica");
+        sirenVolume = volume(activity, parent, "Volume das máquinas", changed);
         music.setOnCheckedChangeListener((view, checked) -> { if (!loading) changed.run(); });
         siren.setOnCheckedChangeListener((view, checked) -> { if (!loading) changed.run(); });
     }

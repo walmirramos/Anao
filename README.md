@@ -1,111 +1,45 @@
 <div align="center">
+<img src="docs/assets/logo.png" width="280" alt="Anão de Firma" />
 
-<img src="docs/assets/corre-nengue.jpg" width="280" alt="Corre Nengue: o protagonista de óculos escuros, São Paulo em pixel art e uma viatura na rua.">
+# Anão de Firma
 
-# Corre Nengue.
+**A firma não para. Você também não.**
 
-### A polícia vem aí.
+Um arcade Android em pixel art dentro de uma fábrica de automóveis.
 
-São Paulo em pixels. Personalidade em cada partida.<br>
-Um toque para entrar no corre. Só mais uma vez para tentar superar seu recorde.
+[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.0.apk)
 
-<br>
-
-<a href="https://walmirramos.github.io/CorreNengue/"><img src=".github/assets/site.svg" height="42" alt="Conhecer o site"></a>
-&nbsp;
-<a href="https://walmirramos.github.io/CorreNengue/downloads/CorreNengue-1.10.1.apk"><img src=".github/assets/android.svg" height="42" alt="Baixar para Android"></a>
-
-<br><br>
-
-**Android 5.0+** &nbsp; · &nbsp; **Versão 1.10.1** &nbsp; · &nbsp; **Dubbox 2026**
-
+Android 5.0+ · Português · Dubbox 2026
 </div>
 
-<br>
+## Entre na linha de montagem
 
-## A cidade não para.
+Um novo protagonista, uma nova identidade e seis setores industriais: estampagem, soldagem, pintura, montagem, qualidade e expedição. Carrocerias, robôs de solda, esteiras e estruturas metálicas compõem a fábrica inspirada na Stellantis.
 
-O Corre Nengue leva a correria para uma São Paulo em pixel art: prédios, paredes de
-tijolos, céu poluído e cenários que mudam conforme você avança. Nas fases mais
-adiante, o lixão pega fogo e a paisagem ganha ainda mais personalidade.
+Desvie de dutos, colunas e máquinas com faixas de segurança. Some peças, supere seu recorde e aproveite os poderes temporários.
 
-Toque para ganhar impulso, atravesse as passagens e acumule **Nencoins**.
-Seu próximo objetivo é simples: passar do próprio recorde.
+## Ouça a fábrica
 
-## Dez segundos. Outra partida.
+Trilha chiptune industrial original, motores, transportadores, sinais eletrônicos e impactos metálicos. Música e máquinas têm controles de volume separados.
 
-Colete os bônus no caminho e mude o ritmo da correria.
+## Como jogar
 
-| Bônus | O que acontece | Duração |
-| :--- | :--- | :---: |
-| **Banana · Sayajin** | Aura dourada e proteção contra paredes. | 10 s |
-| **Celular** | Amplia o vão entre as paredes para dar mais espaço. | 10 s |
-| **Bazuca** | Dispara automaticamente, explode paredes e espalha tijolos. | 10 s |
+Toque na tela para impulsionar o personagem. Evite os obstáculos e o chão. Os bônus de banana, celular e bazuca continuam disponíveis, com efeitos de dez segundos. Nas configurações, personalize a experiência e as cores do personagem.
 
-A primeira banana aparece a partir de **20 Nencoins**. Depois entram os outros
-itens e novas aparições variam durante a partida. A pausa congela os efeitos.
-O chão continua sendo um obstáculo.
+## Instalação
 
-## Seu Nengue. Seu estilo.
+Baixe o APK acima e abra no Android. Autorize a instalação pelo aplicativo usado no download quando solicitado. Esta edição tem identificador próprio e pode ser instalada junto com outros jogos.
 
-**Clássico, azul ou rosa.** Escolha uma paleta ou deixe o jogo sortear.
-Os menus estão em português, e as configurações permitem ajustar o ritmo,
-os cenários e os efeitos da partida.
+## Desenvolvimento
 
-Música chiptune, sirene e efeitos em 8 bits completam a identidade do jogo.
-Música e sirene têm controles de volume separados.
-
-## Comece o corre.
-
-1. [Baixe o APK 1.10.1](https://walmirramos.github.io/CorreNengue/downloads/CorreNengue-1.10.1.apk) no seu Android.
-2. Abra o arquivo e conclua a instalação. Se solicitado, permita a instalação pelo aplicativo que abriu o APK.
-3. Toque em **Nengue Play** e depois na tela para começar.
-
-O download tem aproximadamente **18,6 MB**. O arquivo de
-[verificação SHA-256](docs/downloads/CorreNengue-1.10.1.sha256) acompanha o APK.
-
-<details>
-<summary><strong>Uma dica para explorar as configurações.</strong></summary>
-
-Para ativar a invencibilidade, desenhe um **L** com um dedo: desça e depois siga
-para a direita, sem levantar o dedo entre as partes. Solte ao terminar.
-
-Faça o gesto no centro da tela, longe das bordas de navegação do Android.
-Ele funciona no menu, nas Configurações e durante a partida. A confirmação
-**Invencibilidade ativada** aparece na tela. Repita o L para desativar.
-
-</details>
-
-## Por dentro do projeto.
-
-```text
-app/         Aplicativo Android e recursos do jogo
-docs/        Site oficial, artes de apresentação e download
-guides/      Compilação, controles e identidade visual
-scripts/     Verificações da lógica do jogo
-legal/       Termos e avisos dos componentes
-```
-
-Com o **JDK 21** e o **Android SDK 35** configurados:
+Projeto Android Java. JDK 17 ou 21, Android SDK 35.
 
 ```powershell
-.\gradlew.bat :app:assembleDebug
+./gradlew.bat :app:assembleDebug
 ```
 
-O APK é gerado em `app/build/outputs/apk/debug/app-debug.apk`.
-
-[Guia Android](guides/ANDROID.md) &nbsp; · &nbsp;
-[Identidade visual](guides/ART.md) &nbsp; · &nbsp;
-[Notas de versão](CHANGELOG.md) &nbsp; · &nbsp;
-[Como contribuir](CONTRIBUTING.md) &nbsp; · &nbsp;
-[Site e hospedagem](docs/README.md) &nbsp; · &nbsp;
-[Termos](LICENSE.md)
-
-<br>
-
-<div align="center">
-
-**Dubbox 2026.**<br>
-São Paulo em pixels. O corre é seu.
-
-</div>
+- `app/`: jogo, arte e áudio.
+- `docs/`: apresentação e APK.
+- `scripts/`: geração do áudio e verificações.
+- [Identidade e sons](guides/INDUSTRIAL.md).
+- [Licenças](LICENSE.md).

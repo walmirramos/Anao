@@ -1,6 +1,6 @@
 ---
 name: Relatar um problema
-about: Ajude a melhorar o Corre Nengue
+about: Ajude a melhorar o Anão de Firma
 title: '[Problema] '
 labels: ''
 assignees: ''
@@ -18,7 +18,7 @@ Descreva o problema e o que você esperava que acontecesse.
 
 ## Ambiente
 
-- Versão do Corre Nengue:
+- Versão do Anão de Firma:
 - Modelo do aparelho:
 - Versão do Android:
 - Configurações relevantes:

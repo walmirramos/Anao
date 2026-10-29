@@ -571,7 +571,7 @@
 								android:id="@+id/textview7"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Raios aos Nencoins (ex.: 10,20):"
+								android:text="Raios aos Peças (ex.: 10,20):"
 								android:textSize="12sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -597,7 +597,7 @@
 								android:id="@+id/textview8"
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
-								android:text="Nencoins para o super-raio:"
+								android:text="Peças para o super-raio:"
 								android:textSize="12sp"
 								android:textColor="#BBBBBB"
 								android:layout_weight="1"
@@ -1196,7 +1196,7 @@
 									android:id="@+id/textview651"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Nencoins do nível 1"
+									android:text="Peças do nível 1"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1223,7 +1223,7 @@
 									android:id="@+id/textview652"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Nencoins do nível 2"
+									android:text="Peças do nível 2"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1312,7 +1312,7 @@
 									android:id="@+id/textview655"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Bônus de Nencoins"
+									android:text="Bônus de Peças"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />
@@ -1674,7 +1674,7 @@
 									android:id="@+id/textview668"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:text="Multiplicador de Nencoins"
+									android:text="Multiplicador de Peças"
 									android:textSize="12sp"
 									android:textColor="#FFFAAA"
 									android:fontFamily="@font/flappy_font" />

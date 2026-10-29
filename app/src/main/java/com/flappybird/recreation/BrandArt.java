@@ -11,17 +11,9 @@ final class BrandArt {
     static synchronized void load(Resources resources) {
         if(backdrop!=null && logo!=null) return;
         BitmapFactory.Options options=new BitmapFactory.Options();options.inScaled=false;
-        Bitmap source=BitmapFactory.decodeResource(resources,R.drawable.loading_city_police,options);
-        float aspect=288f/512;
-        int cropWidth=Math.min(source.getWidth(),Math.round(source.getHeight()*aspect));
-        int cropHeight=Math.min(source.getHeight(),Math.round(source.getWidth()/aspect));
-        Rect crop=new Rect((source.getWidth()-cropWidth)/2,(source.getHeight()-cropHeight)/2,
-                (source.getWidth()+cropWidth)/2,(source.getHeight()+cropHeight)/2);
-        backdrop=Bitmap.createBitmap(288,512,Bitmap.Config.ARGB_8888);
+        backdrop=WorldArt.city(resources,false);
         Paint pixels=new Paint();pixels.setFilterBitmap(false);
-        new Canvas(backdrop).drawBitmap(source,crop,new Rect(0,0,288,512),pixels);
-        source.recycle();
-
+        Bitmap source;
         source=BitmapFactory.decodeResource(resources,R.drawable.corre_logo,options);
         int left=source.getWidth(),top=source.getHeight(),right=-1,bottom=-1;
         int[] row=new int[source.getWidth()];

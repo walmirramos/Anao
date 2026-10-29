@@ -13,7 +13,7 @@ public final class OpeningView extends View {
         super(context,attributes);
         BrandArt.load(getResources());character=CharacterSprites.load(getResources());
         pixels.setFilterBitmap(false);setFocusable(true);
-        setContentDescription("Corre Nengue. A polícia vem aí. Dubbox 2026. Toque para correr.");
+        setContentDescription("Anão de Firma. Linha de montagem. Dubbox 2026. Toque para correr.");
     }
     @Override protected void onDraw(Canvas c) {
         super.onDraw(c);
@@ -26,7 +26,7 @@ public final class OpeningView extends View {
         text.setColor(0xe0121c2e);c.drawRect(22,421,266,481,text);
         text.setColor(0xffffd16b);c.drawRect(22,421,266,424,text);
         text.setTextSize(19);text.setColor(0xffffe7a2);c.drawText("TOQUE PARA CORRER",144,449,text);
-        text.setTextSize(11);text.setColor(0xffb9c6d5);c.drawText("A POLÍCIA VEM AÍ",144,468,text);
+        text.setTextSize(11);text.setColor(0xffb9c6d5);c.drawText("A FIRMA NÃO PARA",144,468,text);
         text.setColor(0xffe8d6aa);c.drawText("DUBBOX 2026",144,501,text);
         c.restore();
     }
