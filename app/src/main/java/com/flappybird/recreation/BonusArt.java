@@ -4,7 +4,7 @@ import android.graphics.*;
 
 final class BonusArt {
     private final Paint paint=new Paint();
-    private final Path flame=new Path();
+    private final Bitmap shieldBack=shieldLayer(false), shieldFront=shieldLayer(true);
     private final Bitmap heldBazookaSprite=bazooka();
 
     static Bitmap banana() { // Tire: ten seconds of protective power.
@@ -76,49 +76,44 @@ final class BonusArt {
         paint.setColor(Color.WHITE);paint.setAlpha(255);
     }
 
-    void aura(Canvas canvas, float x, float y, float scale, double time) {
-        int pulse=(int)((Math.sin(time*7)+1)*1.5);
-        int saved=canvas.save();
-        canvas.translate(x,y);canvas.scale(scale,scale);
-        paint.setAntiAlias(false);paint.setFilterBitmap(false);
-        paint.setStyle(Paint.Style.FILL);paint.setStrokeWidth(0);
-
-        // A compact stepped teardrop, centered on the face rather than leaning sideways.
-        // The outline is reused for the nested glow: no paths or paints are allocated per frame.
-        flame.reset();flame.moveTo(-14,22);
-        flame.lineTo(-19,22);flame.lineTo(-19,16);flame.lineTo(-23,16);
-        flame.lineTo(-23,-4);flame.lineTo(-20,-4);flame.lineTo(-20,-15);
-        flame.lineTo(-16,-15);flame.lineTo(-16,-23);flame.lineTo(-11,-23);
-        flame.lineTo(-11,-28-pulse);flame.lineTo(-6,-28-pulse);
-        flame.lineTo(-6,-33-pulse);flame.lineTo(0,-33-pulse);
-        flame.lineTo(0,-30-pulse);flame.lineTo(6,-30-pulse);
-        flame.lineTo(6,-25);flame.lineTo(12,-25);flame.lineTo(12,-20);
-        flame.lineTo(17,-20);flame.lineTo(17,-11);flame.lineTo(21,-11);
-        flame.lineTo(21,1);flame.lineTo(23,1);flame.lineTo(23,15);
-        flame.lineTo(19,15);flame.lineTo(19,20);flame.lineTo(13,20);
-        flame.lineTo(13,23);flame.lineTo(-14,23);flame.close();
-
-        paint.setColor(0x38efaa16);canvas.drawPath(flame,paint);
-        paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(1);
-        paint.setColor(0xb8ffd95d);canvas.drawPath(flame,paint);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.save();canvas.translate(0,2);canvas.scale(.84f,.86f);
-        paint.setColor(0x67ffd84c);canvas.drawPath(flame,paint);
-        canvas.translate(0,2);canvas.scale(.75f,.78f);
-        paint.setColor(0x40fff5ae);canvas.drawPath(flame,paint);
-        canvas.restore();
-
-        // Small upward sparks stay near the envelope, leaving the pipe gaps easy to read.
-        for(int i=0;i<6;i++) {
-            int side=(i%2==0 ? -1 : 1);
-            float px=side*(23+i%3);
-            float py=19-(int)((time*30+i*9)%54);
-            paint.setColor(i%2==0 ? 0xe6ffe889 : 0xd9ffcf42);
-            canvas.drawRect(px,py,px+2,py+3,paint);
-            if(i%3==0)canvas.drawRect(px,py+3,px+1,py+5,paint);
+    /** Cached native-pixel cyan shield; transparent center preserves the supplied face. */
+    private static Bitmap shieldLayer(boolean front) {
+        Bitmap b=Bitmap.createBitmap(64,64,Bitmap.Config.ARGB_8888);
+        Canvas c=new Canvas(b);Paint p=new Paint();p.setAntiAlias(false);
+        if(!front){p.setColor(0x2254d9e4);c.drawCircle(32,32,30,p);}
+        p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(1);
+        p.setColor(front?0x2395f4ff:0x8555c8d7);
+        Path hex=new Path();
+        for(int col=-1;col<6;col++)for(int row=-1;row<5;row++) {
+            float cx=col*14+4,cy=row*16+(col%2==0?0:8);
+            hex.reset();
+            for(int k=0;k<6;k++){
+                double angle=k*Math.PI/3;
+                float x=Math.round(cx+9*Math.cos(angle)),y=Math.round(cy+9*Math.sin(angle));
+                if(k==0)hex.moveTo(x,y);else hex.lineTo(x,y);
+            }
+            hex.close();c.drawPath(hex,p);
         }
-        canvas.restoreToCount(saved);
-        paint.setStyle(Paint.Style.FILL);paint.setStrokeWidth(0);
-        paint.setColor(Color.WHITE);paint.setAlpha(255);
+        // Pixel-exact circular mask and stepped rim, no filtering or blurry glow.
+        for(int y=0;y<64;y++)for(int x=0;x<64;x++){
+            float dx=x-31.5f,dy=y-31.5f,d=dx*dx+dy*dy;
+            if(d>31*31)b.setPixel(x,y,Color.TRANSPARENT);
+            else if(front && d>=29.5f*29.5f)b.setPixel(x,y,y<22?0xd6a8f8ff:0xb349d4e7);
+        }
+        if(front){
+            p.setStyle(Paint.Style.FILL);p.setColor(0xffd4ffff);
+            c.drawRect(13,9,19,11,p);c.drawRect(10,12,13,16,p);
+            p.setColor(0xc2a8f9ff);c.drawRect(50,46,52,52,p);c.drawRect(46,53,50,55,p);
+        }
+        return b;
+    }
+    void shield(Canvas canvas,float x,float y,float scale,double time,boolean front) {
+        int saved=canvas.save();canvas.translate(x,y);
+        float pulse=1f+(float)Math.sin(time*2.8)*.015f;
+        canvas.scale(scale*pulse,scale*pulse);
+        paint.setAntiAlias(false);paint.setFilterBitmap(false);paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.WHITE);paint.setAlpha(front?225:230);
+        canvas.drawBitmap(front?shieldFront:shieldBack,-32,-32,paint);
+        canvas.restoreToCount(saved);paint.setColor(Color.WHITE);paint.setAlpha(255);
     }
 }

@@ -1,5 +1,10 @@
 # Histórico
 
+## 1.4 — Escudo de proteção
+
+Pneu ativa bolha ciano com malha hexagonal e brilho pixelado, substituindo a aura de fogo. Centro transparente mantém o protagonista legível. Camadas desenhadas atrás e à frente do rosto, com pulso suave. Duração de dez segundos e textos no topo preservados.
+
+
 ## 1.3 — Três tiros
 
 HUD de bônus e ganhos no topo. Bazuca com três disparos, sem tempo de expiração, incluindo conclusão do último projétil. Medalhas com gesto pixelado. Movimento decorativo dos canos preserva a posição e largura da abertura. Trilha de terror original adotada para o nível 40.

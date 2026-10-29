@@ -1696,8 +1696,8 @@ class GameView extends View implements Choreographer.FrameCallback {
             canvas.scale(itemScale,itemScale);
             canvas.drawBitmap(item, 0, 0, pixelPaint); canvas.restore();
         }
-        if (gameState==GameState.PLAYING && powerUps.active(PowerUpState.Kind.SAYAJIN)) bonusArt.aura(canvas, birdX, birdY, scale * settingBirdSize,
-                android.os.SystemClock.uptimeMillis() / 1000.0);
+        if (gameState==GameState.PLAYING && powerUps.active(PowerUpState.Kind.SAYAJIN)) bonusArt.shield(canvas, birdX, birdY, scale * settingBirdSize,
+                android.os.SystemClock.uptimeMillis() / 1000.0,false);
         if(gameState==GameState.PLAYING) drawBirdTrail(canvas);
 
         birdPaint.setColorFilter(null);
@@ -1739,6 +1739,8 @@ class GameView extends View implements Choreographer.FrameCallback {
             canvas.drawBitmap(workbookBitmap,null,new RectF(workbookX-10*scale,workbookY-12*scale,workbookX+10*scale,workbookY+12*scale),pixelPaint);
         }
         celebrations.draw(canvas,scale);
+        if(gameState==GameState.PLAYING && powerUps.active(PowerUpState.Kind.SAYAJIN))
+            bonusArt.shield(canvas,birdX,birdY,scale*settingBirdSize,android.os.SystemClock.uptimeMillis()/1000.0,true);
         // Draw Sparks (Over bird)
         for (SparkParticle sp : sparkParticles) {
             sp.draw(canvas, sparkPaint);
@@ -1771,7 +1773,7 @@ class GameView extends View implements Choreographer.FrameCallback {
                 Paint bonusLabel = WorldArt.textPaint(11 * scale);
                 bonusLabel.setColor(powerUps.active(PowerUpState.Kind.CELULAR) ? 0xff8be6ff : 0xffffdb4f);
                 String name=powerUps.active(PowerUpState.Kind.CELULAR) ? "PARAFUSADEIRA / VÃO MAIOR" :
-                        powerUps.active(PowerUpState.Kind.BAZUCA) ? "BAZUCA" : "PNEU / PROTEÇÃO";
+                        powerUps.active(PowerUpState.Kind.BAZUCA) ? "BAZUCA" : "PNEU / ESCUDO";
                 String status=powerUps.active(PowerUpState.Kind.BAZUCA)
                         ? "BAZUCA / "+powerUps.rounds()+" TIROS"+(powerUps.rounds()==0?" / EM VOO":"")
                         : name+" / "+(int)Math.ceil(powerUps.remaining())+"s";

@@ -52,3 +52,9 @@ Bazuca usa estoque de três disparos, consumidos no lançamento. O último proj�
 `Pipe.getCurrentTopPipeY()` ignora o deslocamento decorativo. A renderização recorta a textura animada dentro da silhueta estática e mantém a borda fixa; desenho e colisão compartilham a mesma abertura. O teste de geometria valida 1100 quadros e a interação com o vão ampliado da parafusadeira.
 
 Medalhas usam gesto desenhado com pixels nativos no Canvas, sem depender de fonte emoji. Textos de bônus e ganho de coins ficam no topo. A ambientação original de `night_shift.wav` é agora a trilha definitiva do turno macabro, conforme a preferência por qualquer som assustador.
+
+## Versão 1.4 — bolha do pneu
+
+A referência GIF orienta o escudo ciano com malha hexagonal, borda circular em degraus e reflexos. Desenho nativo em `BonusArt.shieldLayer`: duas camadas de 64×64 pixels preparadas uma vez e ampliadas sem filtro. A camada traseira fica atrás da cabeça; a frontal usa malha de baixa opacidade e borda clara, preservando o rosto original. Pulso suave, sem chamas ou partículas Sayajin.
+
+Textos dos bônus permanecem no topo em coordenadas de tela, fora dos efeitos de câmera. Pneu protege contra paredes por dez segundos; chão mantém a regra anterior. Bazuca continua com três tiros sem tempo.

@@ -7,7 +7,7 @@
 
 Um arcade Android em pixel art dentro de uma fábrica de automóveis.
 
-[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.3.apk)
+[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.4.apk)
 
 Android 5.0+ · Português · Dubbox 2026
 </div>
@@ -49,7 +49,7 @@ Projeto Android Java. JDK 17 ou 21, Android SDK 35.
 ## A experiência
 
 - Protagonista original e carros detalhados em pixel art 16 bits.
-- Pneu protetor e parafusadeira por dez segundos; bazuca com três disparos sem cronômetro.
+- Pneu com escudo de bolha azul e parafusadeira por dez segundos; bazuca com três disparos sem cronômetro.
 - Splash de moedas ao pontuar, com textos de bônus e ganhos no topo.
 - Aos 20 coins, carteira de trabalho: +10 coins e coroa pelo restante da partida.
 - Aos 30, o corpo dos canos se move por dentro de bordas e abertura fixas.
