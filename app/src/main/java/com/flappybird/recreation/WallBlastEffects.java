@@ -8,10 +8,10 @@ import java.util.Random;
 /** Fixed-capacity screen-pixel rubble, emitted from the two mouths of a destroyed wall. */
 final class WallBlastEffects {
     private static final int LIMIT=128, FLASH_LIMIT=8;
-    private static final float DURATION=1.1f, FLASH_DURATION=.18f;
+    private static final float DURATION=1.1f, FLASH_DURATION=.6f;
     private static final int[][] COLORS={
-        {0xffbe5d3d,0xffd88658,0xff8d4133},
-        {0xff97766d,0xffb3947f,0xff654d48},
+        {0xff6c8793,0xffd8e1df,0xff324d5b},
+        {0xff718a95,0xffbccdd1,0xff344651},
         {0xffc28a4c,0xffdfac6a,0xff946535},
         {0xffa7896a,0xffb8aa8d,0xff6e6554},
         {0xffae6950,0xffce9672,0xff6a4b40},
@@ -79,7 +79,11 @@ final class WallBlastEffects {
         paint.setStyle(Paint.Style.FILL);
         for(int i=0;i<FLASH_LIMIT;i++) if(flashLife[i]>0) {
             float progress=1-flashLife[i]/FLASH_DURATION;
-            float radius=flashWidth[i]*(.25f+.35f*progress);
+            float radius=flashWidth[i]*(.35f+.9f*progress);
+            paint.setColor(0xff4b5262);paint.setAlpha((int)(190*(1-progress)));
+            canvas.drawRect(flashX[i]-radius*.8f,flashY[i]-radius*.7f,flashX[i]+radius*.8f,flashY[i]+radius*.7f,paint);
+            paint.setColor(0xffff6c24);paint.setAlpha((int)(255*(1-progress)));
+            canvas.drawRect(flashX[i]-radius*.65f,flashY[i]-radius*.5f,flashX[i]+radius*.65f,flashY[i]+radius*.5f,paint);
             paint.setColor(0xffffbd39);paint.setAlpha((int)(220*(1-progress)));
             canvas.drawRect(flashX[i]-radius,flashY[i]-radius*.22f,flashX[i]+radius,flashY[i]+radius*.22f,paint);
             canvas.drawRect(flashX[i]-radius*.22f,flashY[i]-radius,flashX[i]+radius*.22f,flashY[i]+radius,paint);

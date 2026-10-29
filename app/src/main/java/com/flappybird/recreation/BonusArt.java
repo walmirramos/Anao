@@ -7,34 +7,36 @@ final class BonusArt {
     private final Path flame=new Path();
     private final Bitmap heldBazookaSprite=bazooka();
 
-    static Bitmap banana() {
-        // A compact native pixel sprite, independent of emoji font availability.
-        String[] rows={
-            "................", "...........bb...", "...........by...", "..........byy...",
-            "..........byy...", ".........byyy...", ".........byyy...", "........byyyy...",
-            ".......byyyyb...", "......byyyyyb...", "....bbyyyyyb....", "..bbyyyyyyb.....",
-            ".byyyyyyyb......", ".byyyyybb.......", "..bbbbb.........", "................"};
-        Bitmap b=Bitmap.createBitmap(16,16,Bitmap.Config.ARGB_8888);
-        for(int y=0;y<16;y++)for(int x=0;x<16;x++) {
-            char pixel=rows[y].charAt(x);
-            if(pixel=='b')b.setPixel(x,y,0xff70442a);
-            if(pixel=='y')b.setPixel(x,y,(x+y)%4==0 ? 0xffffe68c : 0xfff9c62e);
-        }
+    static Bitmap banana() { // Tire: ten seconds of protective power.
+        Bitmap b=Bitmap.createBitmap(20,20,Bitmap.Config.ARGB_8888);
+        Canvas c=new Canvas(b);Paint p=new Paint();p.setColor(0xff111c26);c.drawCircle(10,10,9,p);
+        p.setColor(0xff647783);c.drawCircle(10,10,7,p);p.setColor(0xff24333d);c.drawCircle(10,10,5,p);
+        p.setColor(0xffc6d8dd);c.drawCircle(10,10,3,p);p.setColor(0xff364b58);c.drawCircle(10,10,1,p);
+        p.setColor(0xffa4b6bf);for(int y=3;y<17;y+=4){c.drawRect(2,y,4,y+2,p);c.drawRect(16,y,18,y+2,p);}
         return b;
     }
-
-    static Bitmap phone() {
-        Bitmap b=Bitmap.createBitmap(16,16,Bitmap.Config.ARGB_8888);
-        Canvas c=new Canvas(b);Paint p=new Paint();
-        p.setColor(0xff242b37);c.drawRect(4,0,12,16,p);c.drawRect(3,1,13,15,p);
-        p.setColor(0xff7b8690);c.drawRect(4,1,12,15,p);
-        p.setColor(0xff192f3d);c.drawRect(4,3,12,11,p);
-        p.setColor(0xff69d4da);c.drawRect(5,4,11,10,p);
-        p.setColor(0xffeef5df);c.drawRect(6,5,10,6,p);c.drawRect(6,7,9,8,p);
-        p.setColor(0xff242b37);c.drawRect(6,1,10,2,p);
-        p.setColor(0xffffd46a);c.drawRect(7,12,9,14,p);
-        p.setColor(0xffd8e1df);c.drawRect(4,2,5,5,p);
+    static Bitmap phone() { // Cordless industrial screwdriver.
+        Bitmap b=Bitmap.createBitmap(22,20,Bitmap.Config.ARGB_8888);
+        Canvas c=new Canvas(b);Paint p=new Paint();p.setColor(0xff132532);c.drawRect(1,2,16,10,p);
+        p.setColor(0xffe4b735);c.drawRect(2,3,14,9,p);p.setColor(0xffe8d079);c.drawRect(3,3,13,5,p);
+        p.setColor(0xff6b8190);c.drawRect(14,4,18,8,p);p.setColor(0xffd0dce1);c.drawRect(18,5,22,7,p);
+        p.setColor(0xff263743);c.drawRect(6,9,12,17,p);c.drawRect(3,16,14,20,p);
+        p.setColor(0xffc7a02b);c.drawRect(7,10,10,16,p);p.setColor(0xff58c8a7);c.drawRect(5,17,8,19,p);
         return b;
+    }
+    static Bitmap workbook() {
+        Bitmap b=Bitmap.createBitmap(20,24,Bitmap.Config.ARGB_8888);Canvas c=new Canvas(b);Paint p=new Paint();
+        p.setColor(0xff102b46);c.drawRect(1,0,19,24,p);p.setColor(0xff245b87);c.drawRect(3,1,18,23,p);
+        p.setColor(0xffd3bd75);c.drawRect(5,4,15,6,p);c.drawRect(7,8,13,13,p);
+        p.setColor(0xfff4e5a4);c.drawRect(9,7,11,14,p);c.drawRect(6,10,14,11,p);
+        p.setColor(0xffcee0e7);c.drawRect(5,17,15,18,p);c.drawRect(7,20,13,21,p);return b;
+    }
+    void crown(Canvas c,float x,float y,float s) {
+        int saved=c.save();c.translate(x,y);c.scale(s,s);paint.setColor(0xff7f4d13);
+        c.drawRect(-13,-7,13,3,paint);paint.setColor(0xffffce45);c.drawRect(-12,-5,12,2,paint);
+        c.drawRect(-12,-12,-8,-3,paint);c.drawRect(-2,-15,2,-3,paint);c.drawRect(8,-12,12,-3,paint);
+        paint.setColor(0xffffefac);c.drawRect(-11,-4,11,-2,paint);paint.setColor(0xffed5755);c.drawRect(-2,-4,2,0,paint);
+        c.restoreToCount(saved);paint.setColor(Color.WHITE);
     }
 
     static Bitmap bazooka() {

@@ -13,8 +13,8 @@ class PowerUpStateTest {
  public static void main(String[] args){
   PowerUpState p=new PowerUpState(new Random(42));
   check(!p.visible()&&!p.active()&&p.activeKind()==null&&p.collectibleKind()==null,"initial state");
-  check(!p.shouldSpawn(19)&&p.shouldSpawn(20),"first unlock at twenty");
-  p.spawned(19,10);check(!p.visible(),"premature spawn cannot advance sequence");
+  check(!p.shouldSpawn(2)&&p.shouldSpawn(3),"first factory bonus unlocks at three");
+  p.spawned(2,10);check(!p.visible(),"premature spawn cannot advance sequence");
   p.spawned(20,15);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN,"first appearance is aura");
   p.spawned(999,10);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN,"duplicate spawn ignored");
   check(!p.shouldSpawn(999)&&p.collect(),"one collectible can be collected");
@@ -43,7 +43,7 @@ class PowerUpStateTest {
    p.tick(10);previous=next;score+=10;
   }
   check(seen.size()==3,"random phase can contain all kinds");
-  p.reset();check(p.shouldSpawn(20)&&!p.shouldSpawn(19),"reset restores first threshold");
+  p.reset();check(p.shouldSpawn(3)&&!p.shouldSpawn(2),"reset restores first threshold");
   p.spawned(20,10);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN,"reset restores guaranteed sequence");
   p.collect();p.end();check(!p.active()&&!p.visible()&&p.activeKind()==null,"end clears active and collectible state");
   check(!p.shouldSpawn(29)&&p.shouldSpawn(30),"end does not restart score scheduling");
@@ -54,7 +54,9 @@ class PowerUpStateTest {
    check(a.collectibleKind()==b.collectibleKind(),"injected seeded randomness is deterministic");
    a.miss();b.miss();
   }
-  check(new PowerUpState().shouldSpawn(20),"default constructor");
+  check(new PowerUpState().shouldSpawn(3),"default constructor");
+  PowerUpState early=new PowerUpState(new Random(1));early.spawned(3,4);early.miss();
+  check(!early.shouldSpawn(6)&&early.shouldSpawn(7),"factory four-point schedule");
   System.out.println("Power-up state: "+checks+" checks passed, including 200 random transitions");
  }
 }'''

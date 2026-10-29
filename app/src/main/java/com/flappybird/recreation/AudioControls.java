@@ -14,7 +14,7 @@ final class AudioControls {
     private boolean loading;
 
     AudioControls(Activity activity, LinearLayout parent, Runnable changed) {
-        music = toggle(activity, parent, "Música de fundo 8-bit");
+        music = toggle(activity, parent, "Trilha da montadora");
         musicVolume = volume(activity, parent, "Volume da música", changed);
         siren = toggle(activity, parent, "Máquinas da fábrica");
         sirenVolume = volume(activity, parent, "Volume das máquinas", changed);

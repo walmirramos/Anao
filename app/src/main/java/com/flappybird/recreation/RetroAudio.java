@@ -26,8 +26,8 @@ final class RetroAudio implements AudioManager.OnAudioFocusChangeListener {
         foreground = true;
         musicEnabled = prefs.getBoolean(MUSIC, true);
         sirenEnabled = prefs.getBoolean(SIREN, true);
-        musicVolume = Math.max(0, Math.min(100, prefs.getInt(MUSIC_VOLUME, 35))) / 100f;
-        sirenVolume = Math.max(0, Math.min(100, prefs.getInt(SIREN_VOLUME, 18))) / 100f;
+        musicVolume = Math.max(0, Math.min(100, prefs.getInt(MUSIC_VOLUME, 22))) / 100f;
+        sirenVolume = Math.max(0, Math.min(100, prefs.getInt(SIREN_VOLUME, 48))) / 100f;
         if (!musicEnabled && !sirenEnabled) return;
         focused = manager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;

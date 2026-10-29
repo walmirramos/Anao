@@ -9,33 +9,13 @@ final class WorldArt {
         p.setColor(color);c.drawRect(x,y,r,b,p);
     }
     static Bitmap city(Resources res,boolean night) {
+        BitmapFactory.Options options=new BitmapFactory.Options();options.inScaled=false;
+        Bitmap source=BitmapFactory.decodeResource(res,R.drawable.factory_16bit,options);
         Bitmap b=Bitmap.createBitmap(288,512,Bitmap.Config.ARGB_8888);
-        Canvas c=new Canvas(b);Paint p=new Paint();
-        c.drawColor(night?0xff111b29:0xff263a49);
-        // Sawtooth roof, skylights, overhead beams and suspended services.
-        for(int x=0;x<288;x+=48) {
-            Path roof=new Path();roof.moveTo(x,70);roof.lineTo(x+36,38);roof.lineTo(x+36,70);roof.close();
-            p.setColor(0xff506677);c.drawPath(roof,p);
-            rect(c,p,0xffa0ccd0,x+30,44,x+34,67);
-        }
-        for(int y=72;y<310;y+=72) rect(c,p,0xff172634,0,y,288,y+7);
-        for(int x=10;x<288;x+=72) {
-            rect(c,p,0xff152534,x,72,x+9,400);rect(c,p,0xff6d8190,x+2,74,x+4,400);
-            rect(c,p,0xffd6e4ce,x+16,91,x+58,94);rect(c,p,0xff3a525e,x+14,94,x+60,99);
-        }
-        rect(c,p,0xff14232e,0,287,288,400);
-        // Automotive assembly line with unfinished vehicle bodies.
-        for(int x=-20;x<288;x+=100) {
-            rect(c,p,0xff596d77,x,331,x+72,350);rect(c,p,0xff91a9af,x+14,318,x+55,335);
-            rect(c,p,0xff1a3442,x+20,321,x+34,331);rect(c,p,0xff1a3442,x+38,321,x+50,331);
-            rect(c,p,0xff17232b,x+8,345,x+21,357);rect(c,p,0xff17232b,x+52,345,x+65,357);
-        }
-        rect(c,p,0xff778994,0,365,288,373);
-        for(int x=0;x<288;x+=12) rect(c,p,0xff263a43,x,368,x+6,376);
-        rect(c,p,0xff0d1d2a,84,116,204,144);
-        p=textPaint(13);p.setColor(0xffd5e4ef);c.drawText("STELLANTIS",144,135,p);
-        p.setTextSize(7);p.setColor(0xff9bacb9);c.drawText("LINHA DE MONTAGEM",144,156,p);
-        return b;
+        Canvas c=new Canvas(b);Paint p=new Paint();p.setFilterBitmap(false);
+        if(night)p.setColorFilter(new ColorMatrixColorFilter(new float[]{
+            .5f,0,0,0,0, 0,.55f,0,0,2, 0,0,.72f,0,7, 0,0,0,1,0}));
+        c.drawBitmap(source,null,new Rect(0,0,288,512),p);source.recycle();return b;
     }
     static Bitmap wall(int variant) {
         Bitmap b=Bitmap.createBitmap(52,320,Bitmap.Config.ARGB_8888);
@@ -70,15 +50,7 @@ final class WorldArt {
     static Bitmap environment(int variant) {
         Bitmap b=Bitmap.createBitmap(288,512,Bitmap.Config.ARGB_8888);
         Canvas c=new Canvas(b);Paint p=new Paint();
-        // Robot welding cells in six production sectors, scenery only.
-        int orange=variant%2==0?0xffd78d36:0xffcd6447;
-        for(int x=28;x<288;x+=160) {
-            rect(c,p,0xff1b2d36,x,377,x+36,394);
-            rect(c,p,orange,x+12,341,x+23,379);rect(c,p,orange,x+18,332,x+50,343);
-            rect(c,p,orange,x+43,311,x+52,340);rect(c,p,0xffa7bac0,x+46,307,x+61,313);
-            rect(c,p,0xffffdf78,x+59,306,x+62,310);
-            rect(c,p,0xffdba54d,x+66,296,x+68,301);rect(c,p,0xffdba54d,x+65,314,x+69,316);
-        }
+        // Sector signs supplement the detailed assembly illustration.
         String[] sectors={"ESTAMPARIA","SOLDAGEM","PINTURA","MONTAGEM","QUALIDADE","EXPEDIÇÃO"};
         rect(c,p,0xff13212d,91,272,198,288);
         p=textPaint(8);p.setColor(0xffdfe9db);c.drawText(sectors[variant%6],144,283,p);
@@ -93,7 +65,7 @@ final class WorldArt {
         p.setColor(0xff302b32);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2*scale);
         c.drawText("Dubbox 2026",x,y,p);
         p.setStyle(Paint.Style.FILL);p.setColor(0xffffd471);c.drawText("Dubbox 2026",x,y,p);
-        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.0",x,y+13*scale,p);
+        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.1",x,y+13*scale,p);
     }
 
     static Bitmap ground() {
@@ -126,7 +98,7 @@ final class WorldArt {
         p.setColor(0xffead3a4);c.drawRect(3,3,235,123,p);
         p.setColor(0xff6d4535);
         c.drawText("MEDALHA",54,27,p);
-        c.drawText("PEÇAS",177,30,p);
+        c.drawText("COINS",177,30,p);
         c.drawText("RECORDE",177,74,p);
         return b;
     }
@@ -165,7 +137,7 @@ final class WorldArt {
 
     static void coinLabel(Canvas c, float x, float y, float scale) {
         Paint p=textPaint(10*scale);
-        p.setColor(0xff302b32);c.drawText("PEÇAS",x+scale,y+scale,p);
-        p.setColor(0xffffd471);c.drawText("PEÇAS",x,y,p);
+        p.setColor(0xff302b32);c.drawText("COINS",x+scale,y+scale,p);
+        p.setColor(0xffffd471);c.drawText("COINS",x,y,p);
     }
 }

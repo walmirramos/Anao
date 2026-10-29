@@ -6,14 +6,14 @@ import java.util.Random;
  * Gameplay state advanced only by foreground gameplay time.
  * The first three appearances are SAYAJIN, CELULAR, BAZUCA, including missed items.
  * collectibleKind() is non-null only while an item is visible; activeKind() only
- * while its collected effect is active. Callers choose the later score gap (10-25).
+ * while its collected effect is active. Factory bonuses unlock at 3; callers choose later gaps (4-7).
  */
 final class PowerUpState {
     enum Kind { SAYAJIN, CELULAR, BAZUCA }
 
     private static final Kind[] KINDS=Kind.values();
     private final Random random;
-    private int nextScore=20;
+    private int nextScore=3;
     private int appearances;
     private Kind collectible, active, previousAppearance;
     private float remaining;
@@ -40,7 +40,7 @@ final class PowerUpState {
         }
         previousAppearance=collectible;
         appearances++;
-        long threshold=(long)score+Math.max(10,gap);
+        long threshold=(long)score+Math.max(4,gap);
         nextScore=(int)Math.min(Integer.MAX_VALUE,threshold);
     }
 
@@ -69,6 +69,6 @@ final class PowerUpState {
     void end() { remaining=0;active=null;collectible=null; }
 
     void reset() {
-        end();nextScore=20;appearances=0;previousAppearance=null;
+        end();nextScore=3;appearances=0;previousAppearance=null;
     }
 }
