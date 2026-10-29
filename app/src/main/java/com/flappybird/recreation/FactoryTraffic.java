@@ -1,25 +1,47 @@
 package com.flappybird.recreation;
+import android.content.res.Resources;
 import android.graphics.*;
-/** Moving vehicle bodies on the distant assembly conveyor, with no collision. */
+/** Detailed 16-bit carrier sprites, scenery only. */
 final class FactoryTraffic {
-    private static final int[] COLORS={0xffc95743,0xffe2dfcc,0xff4a8ba5,0xffd4a348};
-    private float time;private final Paint p=new Paint();
+    private float time;private final Paint p=new Paint();private final Bitmap car;
+    private final ColorMatrixColorFilter night=new ColorMatrixColorFilter(new float[]{
+        .45f,0,0,0,12, 0,.32f,0,0,0, 0,0,.47f,0,4, 0,0,0,1,0});
+    FactoryTraffic(Resources resources){
+        BitmapFactory.Options o=new BitmapFactory.Options();o.inScaled=false;
+        Bitmap source=BitmapFactory.decodeResource(resources,R.drawable.factory_car_16bit,o);
+        int l=source.getWidth(),t=source.getHeight(),r=0,b=0;int[] row=new int[source.getWidth()];
+        for(int y=0;y<source.getHeight();y++){
+            source.getPixels(row,0,row.length,0,y,row.length,1);
+            for(int x=0;x<row.length;x++)if(Color.alpha(row[x])>128){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}
+        }
+        Bitmap crop=Bitmap.createBitmap(source,l,t,r-l+1,b-t+1);
+        car=Bitmap.createScaledBitmap(crop,96,Math.max(1,Math.round(96f*crop.getHeight()/crop.getWidth())),false);
+        if(crop!=source)crop.recycle();source.recycle();p.setFilterBitmap(false);p.setAntiAlias(false);
+    }
     void tick(float dt){time=(time+Math.max(0,dt))%1000;}
     private void box(Canvas c,int color,float x,float y,float r,float b){p.setColor(color);c.drawRect(x,y,r,b,p);}
-    void draw(Canvas c,float width,float height){
+    void draw(Canvas c,float width,float height,boolean macabre){
         c.save();c.scale(width/288f,height/512f);
-        for(int k=0;k<4;k++){
-            float x=((k*104+time*11)%416)-100;float y=352;
-            box(c,0xff12252e,x,y+4,x+72,y+19);box(c,COLORS[k],x+2,y+3,x+70,y+15);
-            box(c,COLORS[k],x+17,y-9,x+53,y+5);box(c,0xff84b4bd,x+21,y-6,x+35,y+3);
-            box(c,0xff5b8a9b,x+38,y-6,x+49,y+3);box(c,0xfff2ddaa,x+64,y+6,x+70,y+9);
-            box(c,0xff18252e,x+9,y+14,x+22,y+25);box(c,0xff18252e,x+51,y+14,x+64,y+25);
-            box(c,0xffa3b4b8,x+13,y+17,x+18,y+22);box(c,0xffa3b4b8,x+55,y+17,x+60,y+22);
+        if(macabre){
+            // Slow emergency glow and low fog; walls/player stay bright and legible.
+            int a=55+(int)(15*Math.sin(time*1.2));
+            for(int y=278;y<397;y+=14)box(c,Color.argb(20,104,25,60),0,y,288,y+6);
+            for(int x=29;x<288;x+=87){
+                box(c,Color.argb(a,220,31,43),x-8,80,x+11,94);
+                box(c,0xffba3d42,x-2,85,x+5,89);
+            }
+            box(c,0xffb6b6aa,222,245,224,247);box(c,0xffb6b6aa,228,245,230,247);
         }
-        for(int k=0;k<3;k++){
+        p.setColorFilter(macabre?night:null);p.setColor(Color.WHITE);
+        for(int k=0;k<4;k++){
+            float x=((k*124+time*10)%496)-124;
+            c.drawBitmap(car,x,345,p);
+        }
+        p.setColorFilter(null);
+        if(!macabre)for(int k=0;k<3;k++){
             float x=35+k*100;int frame=(int)(time*5+k)%5;
             if(frame<2){box(c,0xffffee9b,x+28,323,x+30,326);box(c,0xffffb94e,x+32,319,x+34,322);}
         }
-        c.restore();
+        c.restore();p.setColor(Color.WHITE);
     }
 }

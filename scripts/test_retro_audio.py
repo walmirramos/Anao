@@ -31,7 +31,7 @@ public class MediaPlayer {
  public void release(){playing=false;released=true;}
 }''',
 'com/flappybird/recreation/R.java': '''package com.flappybird.recreation;
-class R {static class raw {static int nengue_chiptune=1,police_8bit=2;}}''',
+class R {static class raw {static int nengue_chiptune=1,police_8bit=2,night_shift=3;}}''',
 'com/flappybird/recreation/AudioLifecycleTest.java': '''package com.flappybird.recreation;
 import android.media.*;import android.content.*;
 class AudioLifecycleTest {
@@ -59,7 +59,12 @@ class AudioLifecycleTest {
   c.manager.grant=true;prefs.mv=1000;a.resume(prefs);check(near(m.volume,1f),"clamp volume");
   a.onAudioFocusChange(AudioManager.AUDIOFOCUS_LOSS);a.onAudioFocusChange(AudioManager.AUDIOFOCUS_GAIN);
   check(!m.playing&&!s.playing,"permanent loss stays silent");
-  a.release();check(m.released&&s.released,"release players");
+  a.resume(prefs);MediaPlayer n=MediaPlayer.all.get(2);
+  a.setNightShift(true);check(n.playing&&!m.playing&&n.looping,"night shift replaces normal music");
+  a.pause();check(!n.playing,"night shift pauses in background");
+  a.setNightShift(false);check(!m.playing&&!n.playing,"changing phase cannot start background audio");
+  a.resume(prefs);check(m.playing&&!n.playing,"restart restores normal music");
+  a.release();check(m.released&&s.released&&n.released,"release all players");
   System.out.println("Audio lifecycle: all checks passed (isolated API fakes)");
  }
 }''',

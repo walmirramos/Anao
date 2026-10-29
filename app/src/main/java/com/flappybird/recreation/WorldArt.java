@@ -28,18 +28,26 @@ final class WorldArt {
             rect(c,p,0xffc9d1c6,12,y+10,15,y+13);rect(c,p,0xffc9d1c6,36,y+10,39,y+13);
             if(variant%3==1) {
                 rect(c,p,0xff172b36,19,y+10,33,y+29);
-                for(int z=0;z<16;z+=5) rect(c,p,0xff80969d,20,y+12+z,32,y+14+z);
+                for(int z=0;z<15;z+=5) rect(c,p,0xff80969d,20,y+12+z,32,y+14+z);
             } else if(variant%3==2) {
                 rect(c,p,0xff253844,22,y+5,31,y+38);rect(c,p,0xffacb9b9,24,y+6,27,y+38);
             }
         }
         // Safety collars and warning stripes stay within the original collision footprint.
-        for(int y=0;y<320;y+=106) {
+        for(int y=0;y<310;y+=104) {
             rect(c,p,0xffe5b844,0,y,52,y+13);
             for(int x=-12;x<52;x+=16) {
                 Path q=new Path();q.moveTo(x,y);q.lineTo(x+7,y);q.lineTo(x+19,y+13);q.lineTo(x+12,y+13);q.close();
                 p.setColor(0xff202a32);c.save();c.clipRect(0,y,52,y+13);c.drawPath(q,p);c.restore();
             }
+        }
+        // Machined lip, recessed channel, bolts and restrained metal highlights.
+        rect(c,p,0xff152b38,0,0,52,5);rect(c,p,0xffbacdd2,2,1,50,2);
+        rect(c,p,0xff3b515e,10,17,13,320);rect(c,p,0xffadc1c7,13,18,14,320);
+        rect(c,p,0xff293f4b,38,17,41,320);
+        for(int y=18;y<310;y+=26) {
+            rect(c,p,0xff182d38,4,y,8,y+4);rect(c,p,0xffd0dce0,5,y+1,7,y+2);
+            rect(c,p,0xff182d38,44,y,48,y+4);rect(c,p,0xffd0dce0,45,y+1,47,y+2);
         }
         if(variant>=3) {
             rect(c,p,0xffa9c044,17,58,36,74);rect(c,p,0xff24313b,22,62,31,70);
@@ -65,7 +73,7 @@ final class WorldArt {
         p.setColor(0xff302b32);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2*scale);
         c.drawText("Dubbox 2026",x,y,p);
         p.setStyle(Paint.Style.FILL);p.setColor(0xffffd471);c.drawText("Dubbox 2026",x,y,p);
-        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.1",x,y+13*scale,p);
+        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.2",x,y+13*scale,p);
     }
 
     static Bitmap ground() {

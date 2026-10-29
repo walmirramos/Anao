@@ -56,3 +56,10 @@ for start,d,f in [(0,.27,311.127),(.29,.27,293.665),(.58,.27,277.183),(.88,.8,26
  place(fail,brass*env*.19,start)
 write('die',fail)
 print('Workshop motors, pneumatic hiss, servo tools, conveyor, explosion and original comic fail rendered')
+
+# Night shift: original dissonant industrial ambience; not a rendition of a meme.
+u=time(12)
+drone=.09*np.sin(2*np.pi*41*u)+.055*np.sin(2*np.pi*43*u)+.035*np.sin(2*np.pi*82*u)
+drone+=(.045*np.sin(2*np.pi*311*u)+.025*np.sin(2*np.pi*329*u))*(.6+.4*np.sin(2*np.pi*u/3))
+for at in [0,3,6,9]:place(drone,clang(1.2,69)*.4,at)
+write('night_shift',drone)

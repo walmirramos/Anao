@@ -182,7 +182,7 @@ class GameView extends View implements Choreographer.FrameCallback {
     private final Bitmap phoneBitmap = BonusArt.phone();
     private final Bitmap bazookaBitmap = BonusArt.bazooka();
     private final BonusArt bonusArt = new BonusArt();
-    private final FactoryTraffic factoryTraffic=new FactoryTraffic();
+    private final FactoryTraffic factoryTraffic=new FactoryTraffic(getResources());
     private final FactoryCelebration celebrations=new FactoryCelebration();
     private final Bitmap workbookBitmap=BonusArt.workbook();
     private Pipe workbookPipe;
@@ -366,6 +366,8 @@ class GameView extends View implements Choreographer.FrameCallback {
     // Audio & Haptics
     private SoundPool soundPool;
     private RetroAudio retroAudio;
+    private final ColorMatrixColorFilter horrorBackground=new ColorMatrixColorFilter(new float[]{
+        .38f,.06f,0,0,9, 0,.24f,.03f,0,2, .04f,0,.38f,0,8, 0,0,0,1,0});
     private int soundWing, soundPoint, soundHit, soundDie, soundSwooshing, soundThunder, soundShot;
     private ExecutorService soundExecutor;
     private MediaPlayer rainSoundPlayer, stormSoundPlayer;
@@ -773,6 +775,7 @@ class GameView extends View implements Choreographer.FrameCallback {
     private void resetGame() {
         sceneVariant = random.nextInt(4);
         groundImpact.reset();
+        if(retroAudio!=null)retroAudio.setNightShift(false);
         powerUps.reset(); celebrations.clear(); workbookPipe=null;workbookEarned=false; bonusPipe = null; rocketTarget=null; rocketCooldown=0;
         wallBlasts.clear(); skyTraffic.reset(); stopAuraSound();
         if (fallingGunfire != null) fallingGunfire.land();
@@ -1313,7 +1316,12 @@ class GameView extends View implements Choreographer.FrameCallback {
             int playableAreaHeight = getPlayableHeight() - groundHeight;
             for (Pipe pipe : pipes) {
                 pipe.x -= PIPE_SPEED_PER_SEC * gameDeltaTime;
-                if (settingMovingPipesEnabled) {
+                if (score>=30) {
+                    float visualWidth=pipe.width*settingPipeWidth;
+                    float left=pipe.x-(visualWidth-pipe.width)/2f;
+                    boolean near=birdRect.right+28*scale>left && birdRect.left-28*scale<left+visualWidth;
+                    pipe.updateFactoryMotion(score,gameDeltaTime,systemBarTop+24*scale,screenHeight-systemBarBottom-groundHeight-24*scale,pipeGap,near,scale);
+                } else if (settingMovingPipesEnabled) {
                     pipe.updateAnimation(pipesAreMoving, pipeAnimationCounter, currentPipeMoveRange, pipesAreStopping);
                 }
 
@@ -1568,6 +1576,8 @@ class GameView extends View implements Choreographer.FrameCallback {
 
         // --- DRAWING GAME WORLD ---
 
+        pixelPaint.setColorFilter(score>=40 ? horrorBackground : null);
+        nightBgPaint.setColorFilter(score>=40 ? horrorBackground : null);
         Bitmap bgToDraw;
         if(settingDynamicDayNightEnabled) {
             bgToDraw = bgDayBitmap;
@@ -1602,7 +1612,7 @@ class GameView extends View implements Choreographer.FrameCallback {
             canvas.restore();
         }
 
-        factoryTraffic.draw(canvas,screenWidth,screenHeight);
+        factoryTraffic.draw(canvas,screenWidth,screenHeight,score>=40);
         canvas.save();
         canvas.scale(screenWidth/288f,screenHeight/512f);
         // Indoor factory: no aircraft overlay.
@@ -1612,6 +1622,7 @@ class GameView extends View implements Choreographer.FrameCallback {
              weatherSystem.drawBack(canvas);
         }
 
+        pixelPaint.setColorFilter(null);nightBgPaint.setColorFilter(null);
         // Draw Pipes
         if (gameState != GameState.HOME && !(gameState == GameState.TRANSITION_TO_WAITING && isFadingOut)) {
             for (Pipe pipe : pipes) {
@@ -1753,7 +1764,7 @@ class GameView extends View implements Choreographer.FrameCallback {
             if (score >= 20) {
                 Paint stageLabel = WorldArt.textPaint(8 * scale);
                 stageLabel.setColor(Color.rgb(255,226,154));
-                canvas.drawText(score >= 40 ? "EXPEDIÇÃO / TURNO 3" : "MONTAGEM / TURNO 2",
+                canvas.drawText(score >= 40 ? "TURNO MACABRO" : "MONTAGEM / TURNO 2",
                         screenWidth / 2f, systemBarTop + getPlayableHeight() * .15f + 28 * scale, stageLabel);
             }
         } else if (gameState == GameState.PANEL_SLIDING || gameState == GameState.GAME_OVER) {
@@ -2431,6 +2442,7 @@ class GameView extends View implements Choreographer.FrameCallback {
         float deltaTime = (frameTimeNanos - lastFrameTimeNanos) / 1_000_000_000.0f;
         lastFrameTimeNanos = frameTimeNanos;
         if (gameState == GameState.PLAYING) {
+            if(retroAudio!=null)retroAudio.setNightShift(score>=40);
             powerUps.tick(deltaTime);
             celebrations.tick(Math.min(deltaTime,.05f));
             factoryTraffic.tick(Math.min(deltaTime,.05f));
@@ -2897,6 +2909,7 @@ class Pipe {
     private static float pipeHeadWidth, pipeHeadHeight;
     private static float pipeBodyWidth, pipeBodyOffsetX;
     private float currentYOffset = 0;
+    private final SafePipeMotion factoryMotion=new SafePipeMotion();
     public Pipe(float x, int width, int height) {
         this.x = x; this.width = width;
         this.height = height; this.isScored = false;
@@ -2932,9 +2945,12 @@ class Pipe {
             this.topPipeY = random.nextInt(availableRange) + margin + topOffset;
         }
 
-        this.currentYOffset = 0;
+        this.currentYOffset = 0;factoryMotion.reset();
     }
 
+    void updateFactoryMotion(int score,float dt,float top,float bottom,int gap,boolean near,float scale) {
+        currentYOffset=factoryMotion.tick(score,dt,top-topPipeY,bottom-gap-topPipeY,near,scale);
+    }
     public void updateAnimation(boolean isMoving, float animationCounter, float moveRange, boolean isStopping) {
         if (isStopping) { currentYOffset *= 0.9f;
             if (Math.abs(currentYOffset) < 0.1f) currentYOffset = 0; }

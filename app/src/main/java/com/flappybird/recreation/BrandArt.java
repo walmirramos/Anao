@@ -25,7 +25,7 @@ final class BrandArt {
         }
         if(right<left) throw new IllegalStateException("Logo is empty");
         Rect bounds=new Rect(left,top,right+1,bottom+1);
-        float fit=Math.min(252f/bounds.width(),108f/bounds.height());
+        float fit=Math.min(252f/bounds.width(),200f/bounds.height());
         logo=Bitmap.createBitmap(Math.max(1,Math.round(bounds.width()*fit)),
                 Math.max(1,Math.round(bounds.height()*fit)),Bitmap.Config.ARGB_8888);
         new Canvas(logo).drawBitmap(source,bounds,new Rect(0,0,logo.getWidth(),logo.getHeight()),pixels);
