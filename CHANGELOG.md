@@ -1,5 +1,10 @@
 # Histórico
 
+## 1.4.2 — Textura dos canos brancos
+
+A captura fornecida identificou canos brancos sólidos. A opção de cor branca usava SRC_ATOP opaco, substituindo toda a textura. Agora usa luminância e clareamento moderado, preservando textura e transparência. Correção vale para cor fixa e aleatória, inclusive configurações já salvas. Aceleração gráfica restaurada no Android 17; o modo por software da versão 1.4.1 não era a correção desse filtro.
+
+
 ## 1.4.1 — Compatibilidade gráfica
 
 Modo de renderização por software nas telas do jogo no Android 17 (API 37+) para contornar o relato de texturas brancas. Recursos decodificados explicitamente em ARGB com transparência pré-multiplicada. Paint compartilhado reinicializado por quadro e suavização inconsistente removida dos canos. Causa específica do aparelho ainda não confirmada.

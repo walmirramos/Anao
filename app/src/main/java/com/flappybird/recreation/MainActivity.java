@@ -908,7 +908,11 @@ class GameView extends View implements Choreographer.FrameCallback {
             case 1: return new PorterDuffColorFilter(0xFFD05050, PorterDuff.Mode.MULTIPLY); // Red
             case 2: return new PorterDuffColorFilter(0xFF6080E0, PorterDuff.Mode.MULTIPLY); // Blue
             case 3: return new PorterDuffColorFilter(0xFFE0E060, PorterDuff.Mode.MULTIPLY); // Yellow
-            case 4: return new PorterDuffColorFilter(0xFFFFFFFF, PorterDuff.Mode.SRC_ATOP); // White
+            case 4: return new ColorMatrixColorFilter(new float[]{
+                    .299f,.587f,.114f,0,40,
+                    .299f,.587f,.114f,0,40,
+                    .299f,.587f,.114f,0,40,
+                    0,0,0,1,0}); // Light steel: retain luminance, texture and alpha.
             case 5: return new PorterDuffColorFilter(0xFFE879E8, PorterDuff.Mode.MULTIPLY); // Pink
             case 6: return new PorterDuffColorFilter(0xFF505050, PorterDuff.Mode.MULTIPLY); // Black
             case 7: return new PorterDuffColorFilter(0xFF9040D0, PorterDuff.Mode.MULTIPLY); // Purple

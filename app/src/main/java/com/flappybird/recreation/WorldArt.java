@@ -74,7 +74,7 @@ final class WorldArt {
         p.setColor(0xff302b32);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2*scale);
         c.drawText("Dubbox 2026",x,y,p);
         p.setStyle(Paint.Style.FILL);p.setColor(0xffffd471);c.drawText("Dubbox 2026",x,y,p);
-        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.4.1",x,y+13*scale,p);
+        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.4.2",x,y+13*scale,p);
     }
 
     static Bitmap ground() {
