@@ -282,8 +282,9 @@ class GameView extends View implements Choreographer.FrameCallback {
             float radius = 10 * scale;
             if (birdRect.right > bonusX - radius && birdRect.left < bonusX + radius &&
                     birdRect.bottom > bonusY - radius && birdRect.top < bonusY + radius) {
+                PowerUpState.Kind picked=powerUps.collectibleKind();
                 if (powerUps.collect()) {
-                    playSound(powerUps.active(PowerUpState.Kind.SAYAJIN) ? soundAuraActivate : soundSwooshing);
+                    playSound(picked==PowerUpState.Kind.SAYAJIN ? soundAuraActivate : soundSwooshing);
                     updateWallOpenings(0); syncAuraSound();
                     rocketCooldown=0;
                 }
@@ -1497,10 +1498,9 @@ class GameView extends View implements Choreographer.FrameCallback {
             }
         }
 
-        if (powerUps.active(PowerUpState.Kind.SAYAJIN)) return;
 
         for (Pipe pipe : pipes) {
-            if(pipe.status.isDestroyed()) continue;
+            if(pipe.status.isDestroyed() || pipe.status.hasShieldPass()) continue;
             float visualWidth = pipe.width * settingPipeWidth;
             float wallX = pipe.x - (visualWidth - pipe.width) / 2f;
             boolean[] mask = preparedAssets.wallMasks[pipe.wallStyle];
@@ -1508,6 +1508,10 @@ class GameView extends View implements Choreographer.FrameCallback {
                     wallX, topWallY(pipe), visualWidth, pipe.height, true) ||
                 WallCollision.intersects(mask, birdRect.left, birdRect.top, birdRect.right, birdRect.bottom,
                     wallX, bottomWallY(pipe), visualWidth, pipe.height, false)) {
+                if(powerUps.consumeShield()) {
+                    pipe.status.grantShieldPass();stopAuraSound();playSound(soundHit);
+                    triggerShake(1.2f,.12f);continue;
+                }
                 gameOver(true); return;
             }
         }
@@ -1783,7 +1787,10 @@ class GameView extends View implements Choreographer.FrameCallback {
                         powerUps.active(PowerUpState.Kind.BAZUCA) ? "BAZUCA" : "PNEU / ESCUDO";
                 String status=powerUps.active(PowerUpState.Kind.BAZUCA)
                         ? "BAZUCA / "+powerUps.rounds()+" TIROS"+(powerUps.rounds()==0?" / EM VOO":"")
-                        : name+" / "+(int)Math.ceil(powerUps.remaining())+"s";
+                        : powerUps.active(PowerUpState.Kind.CELULAR) ? name+" / "+(int)Math.ceil(powerUps.remaining())+"s"
+                        : "ESCUDO / 1 VIDA EXTRA";
+                if(powerUps.active(PowerUpState.Kind.SAYAJIN) &&
+                        (powerUps.active(PowerUpState.Kind.CELULAR)||powerUps.active(PowerUpState.Kind.BAZUCA)))status+=" / ESCUDO 1";
                 float maxWidth=screenWidth-24*scale;
                 if(bonusLabel.measureText(status)>maxWidth)bonusLabel.setTextSize(bonusLabel.getTextSize()*maxWidth/bonusLabel.measureText(status));
                 canvas.drawText(status,screenWidth/2f,systemBarTop+15*scale,bonusLabel);

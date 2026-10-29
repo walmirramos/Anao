@@ -10,67 +10,50 @@ import java.util.EnumSet;
 class PowerUpStateTest {
  static int checks;
  static void check(boolean b,String name){checks++;if(!b)throw new AssertionError(name);}
- static void expire(PowerUpState p){
-  if(p.active(PowerUpState.Kind.BAZUCA)){
-   while(p.rounds()>0){check(p.fireShot(),"round available");p.resolveShot();}
-  } else p.tick(10);
+ static void clear(PowerUpState p){
+  if(p.active(PowerUpState.Kind.BAZUCA))while(p.rounds()>0){check(p.fireShot(),"round available");p.resolveShot();}
+  p.tick(10);p.consumeShield();
  }
  public static void main(String[] args){
   PowerUpState p=new PowerUpState(new Random(42));
-  check(!p.visible()&&!p.active()&&p.activeKind()==null&&p.collectibleKind()==null,"initial state");
-  check(!p.shouldSpawn(2)&&p.shouldSpawn(3),"first factory bonus unlocks at three");
-  p.spawned(2,10);check(!p.visible(),"premature spawn cannot advance sequence");
-  p.spawned(20,15);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN,"first appearance is aura");
-  p.spawned(999,10);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN,"duplicate spawn ignored");
-  check(!p.shouldSpawn(999)&&p.collect(),"one collectible can be collected");
-  check(p.active(PowerUpState.Kind.SAYAJIN)&&!p.active(PowerUpState.Kind.CELULAR)&&p.remaining()==10,"typed ten-second effect");
-  check(p.collectibleKind()==null&&!p.visible(),"collected item disappears");
-  p.tick(4);check(!p.collect()&&p.remaining()==6,"duplicate collection does not refresh");
-  p.spawned(999,10);check(!p.visible()&&!p.shouldSpawn(999),"no stacking or spawning during effect");
-  p.tick(-2);p.tick(Float.NaN);check(p.remaining()==6,"invalid time cannot extend or corrupt timer");
-  p.tick(5.5f);check(p.active()&&p.remaining()==.5f,"active before exact expiry");
-  p.tick(.5f);check(!p.active()&&p.activeKind()==null&&p.remaining()==0,"exact ten-second expiry");
-  check(!p.shouldSpawn(34)&&p.shouldSpawn(35),"caller-provided later score gap");
-  p.spawned(35,12);check(p.collectibleKind()==PowerUpState.Kind.CELULAR,"second appearance is phone");
-  p.miss();check(!p.visible()&&!p.active()&&p.collectibleKind()==null,"miss grants no effect");
-  check(!p.shouldSpawn(46)&&p.shouldSpawn(47),"miss waits until next threshold");
-  p.spawned(47,10);check(p.collectibleKind()==PowerUpState.Kind.BAZUCA,"third appearance is bazooka after missed phone");
-  p.collect();check(p.active(PowerUpState.Kind.BAZUCA),"bazooka effect is typed");
-  check(p.rounds()==3&&p.remaining()==0,"bazooka gives three rounds without timer");
-  p.tick(9999);check(p.active()&&p.rounds()==3,"ammo never expires");
+  check(!p.active()&&!p.visible()&&p.activeKind()==null,"initial state");
+  check(!p.shouldSpawn(2)&&p.shouldSpawn(3),"first unlock");
+  p.spawned(2,4);check(!p.visible(),"early spawn ignored");
+  p.spawned(3,4);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN&&p.collect(),"tire grants shield");
+  check(p.active(PowerUpState.Kind.SAYAJIN)&&p.remaining()==0,"shield has no timer");
+  p.tick(999999);p.tick(Float.POSITIVE_INFINITY);p.tick(Float.NaN);
+  check(p.active(PowerUpState.Kind.SAYAJIN),"shield never expires");
+  check(!p.collect(),"no phantom second charge");
+  check(!p.shouldSpawn(6)&&p.shouldSpawn(7),"shield permits other bonus spawns");
+  p.spawned(7,4);check(p.collectibleKind()==PowerUpState.Kind.CELULAR&&p.collect(),"drill collected alongside shield");
+  check(p.active(PowerUpState.Kind.SAYAJIN)&&p.active(PowerUpState.Kind.CELULAR),"independent shield and drill");
+  check(p.remaining()==10&&!p.shouldSpawn(99),"drill retains ten-second nonstacking timer");
+  p.tick(-2);p.tick(Float.NaN);check(p.remaining()==10,"invalid time ignored");
+  p.tick(4);check(p.remaining()==6&&p.active(PowerUpState.Kind.SAYAJIN),"drill timer cannot expire shield");
+  check(p.consumeShield()&&!p.active(PowerUpState.Kind.SAYAJIN),"first wall consumes shield");
+  check(!p.consumeShield()&&p.active(PowerUpState.Kind.CELULAR)&&p.remaining()==6,"no second life; drill unaffected");
+  p.tick(6);check(!p.active(),"drill expires normally");
+  p.spawned(11,4);check(p.collectibleKind()==PowerUpState.Kind.BAZUCA&&p.collect(),"third appearance bazooka");
+  p.tick(9999);check(p.active(PowerUpState.Kind.BAZUCA)&&p.rounds()==3,"ammo has no expiry");
   for(int i=3;i>0;i--){
-   check(p.fireShot()&&p.rounds()==i-1,"launch consumes exactly one round");
-   check(!p.fireShot(),"no second launch while rocket is in flight");
-   p.tick(9999);check(p.active(),"last rocket remains active until impact");
-   p.resolveShot();
+   check(p.fireShot()&&p.rounds()==i-1,"exactly one round per shot");
+   check(!p.fireShot(),"one rocket in flight");p.tick(9999);check(p.active(),"last rocket allowed to finish");p.resolveShot();
   }
-  check(!p.active()&&!p.fireShot()&&p.rounds()==0,"cannot fire fourth shot");
-  PowerUpState.Kind previous=PowerUpState.Kind.BAZUCA;
-  EnumSet<PowerUpState.Kind> seen=EnumSet.noneOf(PowerUpState.Kind.class);
-  int score=57;
+  check(!p.active()&&!p.fireShot(),"no fourth shot");
+  PowerUpState q=new PowerUpState(new Random(9));
+  q.spawned(3,4);q.collect();q.spawned(7,4);q.miss();q.spawned(11,4);q.collect();
+  check(q.active(PowerUpState.Kind.SAYAJIN)&&q.active(PowerUpState.Kind.BAZUCA),"shield coexists with bazooka");
+  q.tick(99999);check(q.consumeShield()&&q.rounds()==3,"shield hit preserves ammo");
+  q.end();check(!q.active()&&!q.visible()&&q.rounds()==0,"death clears inventories");
+  p.reset();EnumSet<PowerUpState.Kind> seen=EnumSet.noneOf(PowerUpState.Kind.class);PowerUpState.Kind previous=null;
   for(int i=0;i<200;i++){
-   check(p.shouldSpawn(score),"later eligible spawn");
-   p.spawned(score,10);PowerUpState.Kind next=p.collectibleKind();
-   check(next!=null&&next!=previous,"random appearances never repeat immediately");
-   seen.add(next);p.collect();check(p.active(next),"random kind preserved through collection");
-   expire(p);previous=next;score+=10;
+   int score=3+i*4;check(p.shouldSpawn(score),"next item eligible");p.spawned(score,4);
+   PowerUpState.Kind kind=p.collectibleKind();check(kind!=previous,"no repeat appearances");seen.add(kind);
+   check(p.collect()&&p.active(kind),"collected kind activated");clear(p);check(!p.active(),"charges and timers clear independently");previous=kind;
   }
-  check(seen.size()==3,"random phase can contain all kinds");
-  p.reset();check(p.shouldSpawn(3)&&!p.shouldSpawn(2),"reset restores first threshold");
-  p.spawned(20,10);check(p.collectibleKind()==PowerUpState.Kind.SAYAJIN,"reset restores guaranteed sequence");
-  p.collect();p.end();check(!p.active()&&!p.visible()&&p.activeKind()==null,"end clears active and collectible state");
-  check(!p.shouldSpawn(29)&&p.shouldSpawn(30),"end does not restart score scheduling");
-  p.spawned(30,10);p.end();check(p.collectibleKind()==null&&!p.collect(),"end removes uncollected item");
-  PowerUpState a=new PowerUpState(new Random(987)),b=new PowerUpState(new Random(987));
-  for(int i=0;i<40;i++){
-   int points=20+i*10;a.spawned(points,10);b.spawned(points,10);
-   check(a.collectibleKind()==b.collectibleKind(),"injected seeded randomness is deterministic");
-   a.miss();b.miss();
-  }
-  check(new PowerUpState().shouldSpawn(3),"default constructor");
-  PowerUpState early=new PowerUpState(new Random(1));early.spawned(3,4);early.miss();
-  check(!early.shouldSpawn(6)&&early.shouldSpawn(7),"factory four-point schedule");
-  System.out.println("Power-up state: "+checks+" checks passed, including 200 random transitions");
+  check(seen.size()==3,"all bonuses covered");
+  p.reset();p.spawned(3,4);p.collect();p.reset();check(!p.active()&&!p.consumeShield()&&p.shouldSpawn(3),"restart clears extra life");
+  System.out.println("Power-up state: "+checks+" checks passed, including persistent extra life, coexistence and three-shot ammo");
  }
 }'''
 

@@ -10,6 +10,11 @@ class WallStatusTest {
  static void check(boolean value,String name){checks++;if(!value)throw new AssertionError(name);}
  static void near(float actual,float expected,String name){check(Math.abs(actual-expected)<.0001f,name+": "+actual+" vs "+expected);}
  public static void main(String[] args){
+  WallStatus grace=new WallStatus();grace.reset();
+  check(!grace.hasShieldPass(),"fresh wall has no shield grace");
+  grace.grantShieldPass();check(grace.hasShieldPass()&&!grace.isDestroyed(),"absorbed wall stays visible with contact grace");
+  grace.reset();check(!grace.hasShieldPass(),"recycled wall is dangerous again");
+
   WallStatus w=new WallStatus();
   check(!w.isDestroyed()&&w.generation()==0,"fresh wall lifecycle");
   near(w.extra(),0,"fresh opening");near(w.top(120),120,"fresh top");near(w.bottom(260),260,"fresh bottom");

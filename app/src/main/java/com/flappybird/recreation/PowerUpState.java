@@ -3,7 +3,7 @@ package com.flappybird.recreation;
 import java.util.Random;
 
 /**
- * Timed factory powers use foreground time; bazooka uses three rounds with no expiry.
+ * Shield stores one wall hit indefinitely; drill uses foreground time; bazooka stores three rounds.
  * The first three appearances are SAYAJIN, CELULAR, BAZUCA, including missed items.
  * collectibleKind() is non-null only while an item is visible; activeKind() only
  * while its collected effect is active. Factory bonuses unlock at 3; callers choose later gaps (4-7).
@@ -18,7 +18,7 @@ final class PowerUpState {
     private Kind collectible, active, previousAppearance;
     private float remaining;
     private int rounds;
-    private boolean shotInFlight;
+    private boolean shotInFlight,shield;
 
     PowerUpState() { this(new Random()); }
     PowerUpState(Random random) {
@@ -27,7 +27,7 @@ final class PowerUpState {
     }
 
     boolean shouldSpawn(int score) {
-        return score>=nextScore && !visible() && !active();
+        return score>=nextScore && !visible() && !hasPower();
     }
 
     void spawned(int score, int gap) {
@@ -47,12 +47,11 @@ final class PowerUpState {
     }
 
     boolean collect() {
-        if(!visible() || active()) return false;
-        active=collectible;
-        collectible=null;
+        if(!visible() || hasPower()) return false;
+        if(collectible==Kind.SAYAJIN){shield=true;collectible=null;return true;}
+        active=collectible;collectible=null;
         rounds=active==Kind.BAZUCA?3:0;shotInFlight=false;
-        remaining=active==Kind.BAZUCA?0:10f;
-        return true;
+        remaining=active==Kind.BAZUCA?0:10f;return true;
     }
 
     void miss() { collectible=null; }
@@ -63,12 +62,14 @@ final class PowerUpState {
         if(remaining==0) active=null;
     }
 
-    boolean active() { return active!=null && (active==Kind.BAZUCA ? rounds>0 || shotInFlight : remaining>0); }
-    boolean active(Kind kind) { return active() && active==kind; }
-    boolean visible() { return collectible!=null; }
-    float remaining() { return remaining; }
-    Kind collectibleKind() { return collectible; }
-    Kind activeKind() { return active() ? active : null; }
+    private boolean hasPower() {return active!=null && (active==Kind.BAZUCA ? rounds>0 || shotInFlight : remaining>0);}
+    boolean active() {return shield || hasPower();}
+    boolean active(Kind kind) {return kind==Kind.SAYAJIN ? shield : hasPower() && active==kind;}
+    boolean visible() {return collectible!=null;}
+    float remaining() {return remaining;}
+    Kind collectibleKind() {return collectible;}
+    Kind activeKind() {return hasPower()?active:shield?Kind.SAYAJIN:null;}
+    boolean consumeShield() {if(!shield)return false;shield=false;return true;}
 
     int rounds() {return rounds;}
     boolean fireShot() {
@@ -78,7 +79,7 @@ final class PowerUpState {
     void resolveShot() {
         shotInFlight=false;if(active==Kind.BAZUCA && rounds==0)active=null;
     }
-    void end() { remaining=0;rounds=0;shotInFlight=false;active=null;collectible=null; }
+    void end() { remaining=0;rounds=0;shotInFlight=false;shield=false;active=null;collectible=null; }
 
     void reset() {
         end();nextScore=3;appearances=0;previousAppearance=null;

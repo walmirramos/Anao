@@ -1,5 +1,10 @@
 # Histórico
 
+## 1.6 — Vida extra
+
+Pneu guarda um escudo sem limite de tempo. A primeira colisão com um cano consome a proteção e permite terminar aquela passagem; uma nova colisão em outro cano encerra o jogo. Escudo pode coexistir com parafusadeira ou bazuca. Não acumula vidas e não protege o chão. Contador no topo mostra uma vida extra, sem cronômetro.
+
+
 ## 1.5 — Pixelify Sans
 
 Pixelify Sans aplicada ao tema, configurações, menus, loading, textos de jogo e números dos placares. Peso 700 para manter leitura; fonte e licença incluídas no aplicativo. Posição superior dos bônus preservada.

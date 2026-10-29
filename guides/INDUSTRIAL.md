@@ -62,3 +62,7 @@ Textos dos bônus permanecem no topo em coordenadas de tela, fora dos efeitos de
 ## Versão 1.5 — tipografia
 
 Pixelify Sans, peso 700, no tema XML, configurações, controles dinâmicos e textos Canvas via PixelFont. Os números dos placares são preparados em bitmap a partir da mesma fonte, substituindo os antigos desenhos de números. Acentos portugueses e algarismos verificados no cmap do TTF. A logo é uma arte gráfica e permanece como fornecida. Licença SIL OFL em `app/src/main/assets/licenses/pixelify_ofl.txt`.
+
+## Versão 1.6 — vida extra do pneu
+
+O escudo é uma carga independente, sem timer e sem acumular cargas. Permite coletar parafusadeira e bazuca enquanto está ativo. Uma colisão real com o cano consome a carga e concede passagem apenas àquele par de canos até seu próximo reaproveitamento, evitando dano duplicado no quadro seguinte. Outros canos e chão continuam letais. `WallStatus.reset` remove essa exceção ao reciclar o obstáculo. A nova partida limpa o escudo. HUD permanece no topo e mostra 1 vida extra sem segundos.

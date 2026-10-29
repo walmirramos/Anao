@@ -2,16 +2,18 @@ package com.flappybird.recreation;
 
 /** Shared geometry for rendering and collisions; destroyed walls stay gone until recycled. */
 final class WallStatus {
-    private boolean destroyed;
+    private boolean destroyed,shieldPass;
     private int generation;
     private float openingExtra;
 
-    void reset() { destroyed=false; openingExtra=0; generation++; }
+    void reset() { destroyed=false; shieldPass=false; openingExtra=0; generation++; }
     boolean destroy() {
         if(destroyed) return false;
         destroyed=true; return true;
     }
     boolean isDestroyed() { return destroyed; }
+    void grantShieldPass() {shieldPass=true;}
+    boolean hasShieldPass() {return shieldPass;}
     int generation() { return generation; }
 
     void updateOpening(boolean phoneActive, float extra, float seconds, boolean actorCrossing) {
