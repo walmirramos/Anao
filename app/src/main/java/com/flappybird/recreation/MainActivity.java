@@ -1561,6 +1561,9 @@ class GameView extends View implements Choreographer.FrameCallback {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (canvas == null || !isReady) return;
+        // Shared sprite paint must begin each frame in a neutral state.
+        pixelPaint.setShader(null);pixelPaint.setColorFilter(null);pixelPaint.setXfermode(null);
+        pixelPaint.setColor(Color.WHITE);pixelPaint.setAlpha(255);
 
         if (settingMotionBlurEnabled) {
             motionBlurPaint.setAlpha((int) (255 / (Math.max(1f, settingMotionBlurStrength) * 1.5f)));
@@ -2255,6 +2258,7 @@ class GameView extends View implements Choreographer.FrameCallback {
     private void extractBitmapsFromAtlas() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
+        options.inPreferredConfig=Bitmap.Config.ARGB_8888;options.inMutable=true;options.inPremultiplied=true;
         unscaledBgDay = preparedAssets.day;
         unscaledBgNight = preparedAssets.night;
         unscaledLand = preparedAssets.ground;
@@ -2300,7 +2304,7 @@ class GameView extends View implements Choreographer.FrameCallback {
         pipeUpBitmap = scaleBitmap(unscaledPipeGreen);
         Matrix flipMatrix = new Matrix();
         flipMatrix.setScale(1, -1);
-        pipeDownBitmap = Bitmap.createBitmap(pipeUpBitmap, 0, 0, pipeUpBitmap.getWidth(), pipeUpBitmap.getHeight(), flipMatrix, true);
+        pipeDownBitmap = Bitmap.createBitmap(pipeUpBitmap, 0, 0, pipeUpBitmap.getWidth(), pipeUpBitmap.getHeight(), flipMatrix, false);
         wallBottoms[0] = pipeUpBitmap;
         wallTops[0] = pipeDownBitmap;
         for (int style = 1; style < WorldArt.WALL_STYLES; style++) {

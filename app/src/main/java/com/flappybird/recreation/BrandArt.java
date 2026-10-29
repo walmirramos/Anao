@@ -11,6 +11,7 @@ final class BrandArt {
     static synchronized void load(Resources resources) {
         if(backdrop!=null && logo!=null) return;
         BitmapFactory.Options options=new BitmapFactory.Options();options.inScaled=false;
+        options.inPreferredConfig=Bitmap.Config.ARGB_8888;options.inMutable=true;options.inPremultiplied=true;
         backdrop=WorldArt.city(resources,false);
         Paint pixels=new Paint();pixels.setFilterBitmap(false);
         Bitmap source;

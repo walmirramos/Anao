@@ -8,6 +8,7 @@ final class FactoryTraffic {
         .45f,0,0,0,12, 0,.32f,0,0,0, 0,0,.47f,0,4, 0,0,0,1,0});
     FactoryTraffic(Resources resources){
         BitmapFactory.Options o=new BitmapFactory.Options();o.inScaled=false;
+        o.inPreferredConfig=Bitmap.Config.ARGB_8888;o.inMutable=true;o.inPremultiplied=true;
         Bitmap source=BitmapFactory.decodeResource(resources,R.drawable.factory_car_16bit,o);
         int l=source.getWidth(),t=source.getHeight(),r=0,b=0;int[] row=new int[source.getWidth()];
         for(int y=0;y<source.getHeight();y++){

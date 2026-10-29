@@ -14,13 +14,13 @@ android:icon="@mipmap/launcher"
 		<activity
 			android:name=".MainActivity"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-			android:hardwareAccelerated="true"
+			android:hardwareAccelerated="@bool/game_hardware_acceleration"
 			android:supportsPictureInPicture="true"
 			android:screenOrientation="portrait" />
 		<activity
 			android:name=".GearslogoActivity"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-			android:hardwareAccelerated="true"
+			android:hardwareAccelerated="@bool/game_hardware_acceleration"
 			android:supportsPictureInPicture="true"
 			android:screenOrientation="portrait"
 			android:exported="true">

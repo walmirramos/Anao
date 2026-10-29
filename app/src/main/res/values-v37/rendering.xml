@@ -1,0 +1,4 @@
+<resources>
+    <!-- Android 17 compatibility: raster Canvas avoids driver-dependent white textures. -->
+    <bool name="game_hardware_acceleration">false</bool>
+</resources>

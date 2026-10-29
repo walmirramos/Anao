@@ -32,6 +32,7 @@ final class CharacterSprites {
     static Bitmap load(Resources resources) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
+        options.inPreferredConfig=Bitmap.Config.ARGB_8888;options.inMutable=true;options.inPremultiplied=true;
         Bitmap source = BitmapFactory.decodeResource(resources, R.drawable.nengue_character, options);
         int left = source.getWidth(), top = source.getHeight(), right = -1, bottom = -1;
         int[] row = new int[source.getWidth()];

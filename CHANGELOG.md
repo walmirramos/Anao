@@ -1,5 +1,10 @@
 # Histórico
 
+## 1.4.1 — Compatibilidade gráfica
+
+Modo de renderização por software nas telas do jogo no Android 17 (API 37+) para contornar o relato de texturas brancas. Recursos decodificados explicitamente em ARGB com transparência pré-multiplicada. Paint compartilhado reinicializado por quadro e suavização inconsistente removida dos canos. Causa específica do aparelho ainda não confirmada.
+
+
 ## 1.4 — Escudo de proteção
 
 Pneu ativa bolha ciano com malha hexagonal e brilho pixelado, substituindo a aura de fogo. Centro transparente mantém o protagonista legível. Camadas desenhadas atrás e à frente do rosto, com pulso suave. Duração de dez segundos e textos no topo preservados.

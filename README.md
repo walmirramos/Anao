@@ -7,7 +7,7 @@
 
 Um arcade Android em pixel art dentro de uma fábrica de automóveis.
 
-[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.4.apk)
+[**Baixar para Android**](https://github.com/walmirramos/Anao/raw/refs/heads/main/docs/downloads/AnaoDeFirma-1.4.1.apk)
 
 Android 5.0+ · Português · Dubbox 2026
 </div>
@@ -57,3 +57,5 @@ Projeto Android Java. JDK 17 ou 21, Android SDK 35.
 - Medalhas com gesto irreverente em pixel art. Abertura e loading exibem apenas logo e textos.
 
 Detalhes de cada versão no [histórico](CHANGELOG.md).
+
+A versão 1.4.1 inclui um [modo de compatibilidade gráfica para Android 17](guides/ANDROID-17.md), com renderização por software nessa versão do sistema.
