@@ -1,5 +1,10 @@
 # Histórico
 
+## 1.5 — Pixelify Sans
+
+Pixelify Sans aplicada ao tema, configurações, menus, loading, textos de jogo e números dos placares. Peso 700 para manter leitura; fonte e licença incluídas no aplicativo. Posição superior dos bônus preservada.
+
+
 ## 1.4.2 — Textura dos canos brancos
 
 A captura fornecida identificou canos brancos sólidos. A opção de cor branca usava SRC_ATOP opaco, substituindo toda a textura. Agora usa luminância e clareamento moderado, preservando textura e transparência. Correção vale para cor fixa e aleatória, inclusive configurações já salvas. Aceleração gráfica restaurada no Android 17; o modo por software da versão 1.4.1 não era a correção desse filtro.

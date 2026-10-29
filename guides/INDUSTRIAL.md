@@ -58,3 +58,7 @@ Medalhas usam gesto desenhado com pixels nativos no Canvas, sem depender de font
 A referência GIF orienta o escudo ciano com malha hexagonal, borda circular em degraus e reflexos. Desenho nativo em `BonusArt.shieldLayer`: duas camadas de 64×64 pixels preparadas uma vez e ampliadas sem filtro. A camada traseira fica atrás da cabeça; a frontal usa malha de baixa opacidade e borda clara, preservando o rosto original. Pulso suave, sem chamas ou partículas Sayajin.
 
 Textos dos bônus permanecem no topo em coordenadas de tela, fora dos efeitos de câmera. Pneu protege contra paredes por dez segundos; chão mantém a regra anterior. Bazuca continua com três tiros sem tempo.
+
+## Versão 1.5 — tipografia
+
+Pixelify Sans, peso 700, no tema XML, configurações, controles dinâmicos e textos Canvas via PixelFont. Os números dos placares são preparados em bitmap a partir da mesma fonte, substituindo os antigos desenhos de números. Acentos portugueses e algarismos verificados no cmap do TTF. A logo é uma arte gráfica e permanece como fornecida. Licença SIL OFL em `app/src/main/assets/licenses/pixelify_ofl.txt`.

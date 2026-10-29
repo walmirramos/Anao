@@ -2285,12 +2285,7 @@ class GameView extends View implements Choreographer.FrameCallback {
         if (unscaledButtonSettings == null) Log.w("GameView", "Could not load 'settingsbutton.png'.");
         
         for (int tier=0; tier<4; tier++) unscaledMedalsBitmaps[tier] = preparedAssets.medals[tier];
-        for (int i = 0; i < 10; i++) {
-            int resId = getResources().getIdentifier("number_" + i, "drawable", getContext().getPackageName());
-            if (resId != 0) unscaledNumberBitmaps[i] = BitmapFactory.decodeResource(getResources(), resId, options);
-            else { Log.e("GameView", "Missing number resource: number_" + i);
-                unscaledNumberBitmaps[i] = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); }
-        }
+        for(int i=0;i<10;i++)unscaledNumberBitmaps[i]=WorldArt.digit(i);
     }
     private Bitmap scaleBitmap(Bitmap bitmap) {
         if (bitmap == null) return null;

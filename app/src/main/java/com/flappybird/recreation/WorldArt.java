@@ -74,7 +74,7 @@ final class WorldArt {
         p.setColor(0xff302b32);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2*scale);
         c.drawText("Dubbox 2026",x,y,p);
         p.setStyle(Paint.Style.FILL);p.setColor(0xffffd471);c.drawText("Dubbox 2026",x,y,p);
-        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.4.2",x,y+13*scale,p);
+        p.setTextSize(7*scale);p.setColor(0xffe1d5c1);c.drawText("ANÃO DE FIRMA 1.5",x,y+13*scale,p);
     }
 
     static Bitmap ground() {
@@ -87,6 +87,18 @@ final class WorldArt {
             rect(c,p,0xff111f28,x,20,x+14,49);rect(c,p,0xff697e88,x+3,22,x+7,47);
         }
         rect(c,p,0xff111f28,0,52,336,59);return b;
+    }
+
+    static Bitmap digit(int number) {
+        String value=Integer.toString(number);Paint p=textPaint(34);
+        p.setTextAlign(Paint.Align.LEFT);
+        int width=Math.max(1,(int)Math.ceil(p.measureText(value))+4);
+        Bitmap b=Bitmap.createBitmap(width,36,Bitmap.Config.ARGB_8888);
+        Canvas c=new Canvas(b);Paint.FontMetrics fm=p.getFontMetrics();
+        float baseline=(36-(fm.descent-fm.ascent))/2f-fm.ascent;
+        p.setColor(0xff17232e);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);
+        c.drawText(value,2,baseline,p);p.setStyle(Paint.Style.FILL);p.setColor(0xfffff4d3);
+        c.drawText(value,2,baseline,p);return b;
     }
 
     static Bitmap button(String first, String second) {
